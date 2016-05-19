@@ -1,4 +1,4 @@
-package main.java.datastorage;
+package datastorage;
 
 import main.java.domain.Dish;
 import java.util.ArrayList;

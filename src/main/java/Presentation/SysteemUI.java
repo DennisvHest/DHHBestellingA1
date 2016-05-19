@@ -1,8 +1,8 @@
-package main.java.presentation;
+package presentation;
 
 import main.java.domain.Dish;
 import main.java.domain.DishOrder;
-import main.java.manager.DishManager;
+import manager.DishManager;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Frame;

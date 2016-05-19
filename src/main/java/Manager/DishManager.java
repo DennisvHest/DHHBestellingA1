@@ -1,6 +1,6 @@
-package main.java.manager;
+package manager;
 
-import main.java.datastorage.DishDAO;
+import datastorage.DishDAO;
 import main.java.domain.Dish;
 import java.util.ArrayList;
 
