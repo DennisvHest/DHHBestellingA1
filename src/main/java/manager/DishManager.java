@@ -1,7 +1,7 @@
 package manager;
 
 import datastorage.DishDAO;
-import main.java.domain.Dish;
+import domain.Dish;
 import java.util.ArrayList;
 
 /**

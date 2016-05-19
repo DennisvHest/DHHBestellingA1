@@ -1,6 +1,6 @@
 package datastorage;
 
-import main.java.domain.Dish;
+import domain.Dish;
 import java.util.ArrayList;
 
 /**
