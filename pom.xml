@@ -3,7 +3,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.avans</groupId>
-  <artifactId>librarySmallExtension_idh5</artifactId>
+  <artifactId>dhhbestellinga1</artifactId>
   <name>DHHBestellingA1</name>
   <packaging>jar</packaging>
   <version>1.0.0.BUILD-SNAPSHOT</version>
@@ -32,7 +32,7 @@
   </dependencies>
 
   <build>
-    <finalName>library_idh5</finalName>
+    <finalName>dhhbestellinga1</finalName>
 
     <plugins>
       <plugin>
@@ -52,7 +52,7 @@
         <artifactId>exec-maven-plugin</artifactId>
         <version>1.2.1</version>
         <configuration>
-          <mainClass>org.test.int1.Main</mainClass>
+          <mainClass>main.ProftaakVP4</mainClass>
         </configuration>
       </plugin>
       <plugin>
