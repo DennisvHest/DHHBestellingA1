@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Main;
+package main.java.main;
 
-import Presentation.SysteemUI;
+import main.java.presentation.SysteemUI;
 
 /**
  *

@@ -1,4 +1,4 @@
-package Domain;
+package main.java.domain;
 
 /**
  *

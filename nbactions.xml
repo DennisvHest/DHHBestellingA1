@@ -18,7 +18,7 @@
             <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
         </goals>
         <properties>
-            <exec.args>-classpath %classpath edu.avans.library.main.Main</exec.args>
+            <exec.args>-classpath %classpath main.ProftaakVP4</exec.args>
             <exec.executable>java</exec.executable>
         </properties>
     </action>

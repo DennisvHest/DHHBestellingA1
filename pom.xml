@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.avans</groupId>
   <artifactId>librarySmallExtension_idh5</artifactId>
-  <name>librarySmallExtension_idh5</name>
+  <name>DHHBestellingA1</name>
   <packaging>jar</packaging>
   <version>1.0.0.BUILD-SNAPSHOT</version>
   <properties>
@@ -37,7 +37,7 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
+        <artifactId>DHHBestellingA1</artifactId>
         <version>2.3.2</version>
         <configuration>
           <source>${java-version}</source>

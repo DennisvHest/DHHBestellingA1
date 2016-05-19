@@ -1,8 +1,8 @@
-package Presentation;
+package main.java.presentation;
 
-import Domain.Dish;
-import Domain.DishOrder;
-import Manager.DishManager;
+import main.java.domain.Dish;
+import main.java.domain.DishOrder;
+import main.java.manager.DishManager;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Frame;
@@ -14,7 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import Manager.UIManager;
+import main.java.manager.UIManager;
 import java.awt.Dimension;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
