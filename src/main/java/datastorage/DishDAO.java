@@ -7,14 +7,13 @@ import java.util.ArrayList;
  *
  * @author Dennis
  */
-public class DishDAO
-{
+public class DishDAO {
+
     private ArrayList<Dish> dishList;
-    
-    public DishDAO()
-    {
+
+    public DishDAO() {
         dishList = new ArrayList<>();
-        
+
         //A few hardcoded dishes. Remove when connected to the database!
         Dish dish1 = new Dish("Portie Olijven", "Appetizer", "Portie Olijven", 3.00);
         dishList.add(dish1);
@@ -27,19 +26,16 @@ public class DishDAO
         Dish dish5 = new Dish("Chocolade-ijs", "Dessert", "Chocolade-ijs van verschillende soorten chocola.", 5.50);
         dishList.add(dish5);
     }
-    
-    public ArrayList<Dish> getDishListBySort(String sort)
-    {
+
+    public ArrayList<Dish> getDishListBySort(String sort) {
         ArrayList<Dish> dishes = new ArrayList<>();
-        
-        for(Dish dish : dishList)
-        {
-            if(dish.getSortDish().equals(sort))
-            {
+
+        for (Dish dish : dishList) {
+            if (dish.getSortDish().equals(sort)) {
                 dishes.add(dish);
             }
         }
-        
+
         return dishes;
     }
 }

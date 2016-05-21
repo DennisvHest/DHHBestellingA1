@@ -1,9 +1,8 @@
 package manager;
 
-public class UIManager 
-{
-    public UIManager()
-    {
-        
+public class UIManager {
+
+    public UIManager() {
+
     }
 }
