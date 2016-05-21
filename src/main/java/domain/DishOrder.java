@@ -14,8 +14,12 @@ public class DishOrder {
         this.dish = dish;
         this.dishAmount = dishAmount;
         
-        statusDish = "added";
+        statusDish = "pending";
         dishDone = false;
         totalPriceDish = dish.getpriceDish() * dishAmount;
+    }
+    
+    public Dish getDish() {
+        return dish;
     }
 }

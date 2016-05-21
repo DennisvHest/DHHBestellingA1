@@ -17,13 +17,11 @@ public class Order {
     private ArrayList<DishOrder> dishOrders;
     //private ArrayList<DrinkOrder> drinkOrders;
 
-    public Order(int orderNr, Date orderDate, int tableNr) {
-        this.orderNr = orderNr;
-        this.orderDate = orderDate;
+    public Order(int tableNr) {
         this.tableNr = tableNr;
 
         payed = false;
-        orderStatus = "Geplaatst";
+        orderStatus = "pending";
     }
 
     //Getters
@@ -39,7 +37,7 @@ public class Order {
         return payed;
     }
 
-    public String orderStatus() {
+    public String getOrderStatus() {
         return orderStatus;
     }
 
@@ -49,5 +47,9 @@ public class Order {
 
     public ArrayList<DishOrder> getDishOrders() {
         return dishOrders;
+    }
+    
+    public void addDishOrder(DishOrder order) {
+        dishOrders.add(order);
     }
 }

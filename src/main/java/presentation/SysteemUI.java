@@ -2,6 +2,7 @@ package presentation;
 
 import domain.Dish;
 import domain.DishOrder;
+import domain.Order;
 import manager.DishManager;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -17,13 +18,12 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import manager.UIManager;
 import java.awt.Dimension;
-import java.awt.Toolkit;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.JTextArea;
+import manager.OrderManager;
 
 /**
  *
@@ -36,9 +36,10 @@ public class SysteemUI extends JFrame {
     private JSplitPane menuPane;
     private ArrayList<Component> panelList;
     private JTabbedPane menuTabbedPane;
+    private OrderSummaryPanel orderSummaryPanel;
     private UIManager manager;
     private DishManager dishManager;
-    public final static Dimension SCREENSIZE = Toolkit.getDefaultToolkit().getScreenSize();
+    private OrderManager orderManager;
 
     public SysteemUI() {
         frame = new JFrame();
@@ -54,7 +55,7 @@ public class SysteemUI extends JFrame {
 
         //Navigation bar with buttons
         frame.add(new NavBarPanel(), BorderLayout.NORTH);
-        
+
         //Categories with dishes / drinks
         menuTabbedPane = new JTabbedPane();
         menuTabbedPane.add("Voorgerechten", new JScrollPane(new AppetizerPanel()));
@@ -63,7 +64,8 @@ public class SysteemUI extends JFrame {
         menuTabbedPane.add("Dranken", new JScrollPane(new DrinkPanel()));
         menuTabbedPane.setMinimumSize(new Dimension(1100, 1000));
         
-        menuPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, menuTabbedPane, new OrderSummaryPanel());
+        orderSummaryPanel = new OrderSummaryPanel();
+        menuPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, menuTabbedPane, orderSummaryPanel);
         panelList.add(menuPane);
         frame.add(menuPane, BorderLayout.CENTER);
 
@@ -177,12 +179,23 @@ public class SysteemUI extends JFrame {
             }
         }
     }
-    
-    class OrderSummaryPanel extends JPanel{
-        
-        public OrderSummaryPanel(){
+
+    class OrderSummaryPanel extends JPanel {
+
+        private JTextArea orderSumArea;
+
+        public OrderSummaryPanel() {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+            setBackground(Color.white);
             add(new JLabel("Toegevoegde gerechten:"));
+
+            orderSumArea = new JTextArea();
+            orderSumArea.setEditable(false);
+            add(orderSumArea);
+        }
+
+        public void setSumText(String text) {
+            orderSumArea.setText(text);
         }
     }
 
@@ -224,7 +237,15 @@ public class SysteemUI extends JFrame {
 
         JButton addButton = new JButton("Voeg toe");
         addButton.addActionListener((ActionEvent e) -> {
-            DishOrder newDish = new DishOrder(1, dish, 1);
+            orderSummaryPanel.setSumText("Hallo");
+            if (orderManager.pendingOrderExist() == false) {
+                Order pendingOrder = new Order(1);
+                orderManager.addOrder(pendingOrder);
+            }
+
+            orderManager.getPendingOrder().addDishOrder(new DishOrder(1, dish, 1));
+            
+            orderSummaryPanel.setSumText(orderManager.printPendingOrders());
         });
 
         orderPanel.add(addButton);
