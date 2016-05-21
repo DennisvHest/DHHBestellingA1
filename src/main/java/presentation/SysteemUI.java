@@ -5,6 +5,7 @@ import domain.DishOrder;
 import manager.DishManager;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Insets;
@@ -16,10 +17,12 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import manager.UIManager;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JSplitPane;
 import javax.swing.SpinnerNumberModel;
 
 /**
@@ -30,10 +33,12 @@ public class SysteemUI extends JFrame {
 
     private JFrame frame;
     private JPanel navBarPanel, orderedItemPanel, receiptPanel;
-    private ArrayList<JPanel> panelList;
+    private JSplitPane menuPane;
+    private ArrayList<Component> panelList;
     private JTabbedPane menuTabbedPane;
     private UIManager manager;
     private DishManager dishManager;
+    public final static Dimension SCREENSIZE = Toolkit.getDefaultToolkit().getScreenSize();
 
     public SysteemUI() {
         frame = new JFrame();
@@ -49,14 +54,18 @@ public class SysteemUI extends JFrame {
 
         //Navigation bar with buttons
         frame.add(new NavBarPanel(), BorderLayout.NORTH);
-
-        //Menu with categories
+        
+        //Categories with dishes / drinks
         menuTabbedPane = new JTabbedPane();
         menuTabbedPane.add("Voorgerechten", new JScrollPane(new AppetizerPanel()));
         menuTabbedPane.add("Hoofdgerechten", new JScrollPane(new MainCoursePanel()));
         menuTabbedPane.add("Nagerechten", new JScrollPane(new DessertPanel()));
         menuTabbedPane.add("Dranken", new JScrollPane(new DrinkPanel()));
-        frame.add(menuTabbedPane, BorderLayout.CENTER);
+        menuTabbedPane.setMinimumSize(new Dimension(1100, 1000));
+        
+        menuPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, menuTabbedPane, new OrderSummaryPanel());
+        panelList.add(menuPane);
+        frame.add(menuPane, BorderLayout.CENTER);
 
         //Menu with list of ordered items
         orderedItemPanel = new JPanel();
@@ -98,10 +107,7 @@ public class SysteemUI extends JFrame {
                 //Menu buttons
                 menuButton = new JButton("Menu");
                 menuButton.addActionListener((ActionEvent e) -> {
-                    //Change active panel to the menu
-                    for (JPanel panel : panelList) {
-                        panel.setVisible(false);
-                    }
+                    changePanel(menuPane);
                     menuTabbedPane.setVisible(true);
                 });
 
@@ -171,10 +177,18 @@ public class SysteemUI extends JFrame {
             }
         }
     }
+    
+    class OrderSummaryPanel extends JPanel{
+        
+        public OrderSummaryPanel(){
+            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+            add(new JLabel("Toegevoegde gerechten:"));
+        }
+    }
 
-    public void changePanel(JPanel panel) {
+    public void changePanel(Component panel) {
         //Set every panel to invisible except the given panel;
-        for (JPanel panelInList : panelList) {
+        for (Component panelInList : panelList) {
             if (panelInList != panel) {
                 panelInList.setVisible(false);
             }
@@ -207,11 +221,10 @@ public class SysteemUI extends JFrame {
 
         JPanel orderPanel = new JPanel();
         orderPanel.setBackground(Color.white);
-        JSpinner amountSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
-        orderPanel.add(amountSpinner);
+
         JButton addButton = new JButton("Voeg toe");
         addButton.addActionListener((ActionEvent e) -> {
-            DishOrder newDish = new DishOrder(1, dish, (int) amountSpinner.getValue());
+            DishOrder newDish = new DishOrder(1, dish, 1);
         });
 
         orderPanel.add(addButton);
