@@ -5,6 +5,7 @@ import domain.DishOrder;
 import domain.Order;
 import manager.DishManager;
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
@@ -18,9 +19,11 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import manager.UIManager;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import manager.OrderManager;
@@ -66,20 +69,20 @@ public class SysteemUI extends JFrame {
         
         orderSummaryPanel = new OrderSummaryPanel();
         menuPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, menuTabbedPane, orderSummaryPanel);
-        panelList.add(menuPane);
-        frame.add(menuPane, BorderLayout.CENTER);
 
         //Menu with list of ordered items
         orderOverviewPanel = new OrderOverviewPanel();
-        add(orderOverviewPanel, BorderLayout.CENTER);
-        orderOverviewPanel.setVisible(false);
-        panelList.add(orderOverviewPanel);
 
         //Menu with receipt
         receiptPanel = new JPanel();
-        panelList.add(receiptPanel);
-        add(receiptPanel, BorderLayout.CENTER);
-        receiptPanel.setVisible(false);
+        
+        //Panel with CardLayout that holds all other menus
+        centerMenu = new JPanel();
+        centerMenu.setLayout(new CardLayout());
+        centerMenu.add("menuPane", menuPane);
+        centerMenu.add("orderOverviewPanel", orderOverviewPanel);
+        centerMenu.add("receiptPanel", receiptPanel);
+        frame.add(centerMenu, BorderLayout.CENTER);
 
         frame.pack();
         frame.setExtendedState(Frame.MAXIMIZED_BOTH);
@@ -109,18 +112,18 @@ public class SysteemUI extends JFrame {
                 //Menu buttons
                 menuButton = new JButton("Menu");
                 menuButton.addActionListener((ActionEvent e) -> {
-                    changePanel(menuPane);
+                    changePanel("menuPane");
                     menuTabbedPane.setVisible(true);
                 });
 
                 orderedItemButton = new JButton("Besteloverzicht");
                 orderedItemButton.addActionListener((ActionEvent e) -> {
-                    changePanel(orderOverviewPanel);
+                    changePanel("orderOverviewPanel");
                 });
 
                 receiptButton = new JButton("Rekening");
                 receiptButton.addActionListener((ActionEvent e) -> {
-                    changePanel(receiptPanel);
+                    changePanel("receiptPanel");
                 });
 
                 helpButton = new JButton("?");
@@ -205,27 +208,35 @@ public class SysteemUI extends JFrame {
         public OrderOverviewPanel() {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             
-            setBackground(Color.red);
-            
             add(new JLabel("Bestelling in afwachting van bevestiging"));
             
-            //add(createPendingOrderPanel());
+            JPanel ordersPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            add(ordersPanel);
+            ordersPanel.add(createPendingOrderPanel());
         }
         
-//        public JPanel createPendingOrderPanel() {
-//            
-//        }
+        public JPanel createPendingOrderPanel() {
+            JPanel pendingOrderPanel = new JPanel();
+            pendingOrderPanel.setLayout(new GridLayout(1, 6));
+            pendingOrderPanel.setPreferredSize(new Dimension(1000, 100));
+            pendingOrderPanel.setBackground(Color.white);
+            
+            pendingOrderPanel.add(new JLabel(""));
+            pendingOrderPanel.add(new JLabel("Portie Olijven"));
+            pendingOrderPanel.add(new JLabel("Voorgerecht"));
+            pendingOrderPanel.add(new JLabel("Aantal"));
+            pendingOrderPanel.add(new JSpinner());
+            pendingOrderPanel.add(new JButton("X"));
+            
+            pendingOrderPanel.setAlignmentX(CENTER_ALIGNMENT);
+            
+            return pendingOrderPanel;
+        }
     }
 
-    public void changePanel(Component panel) {
-        //Set every panel to invisible except the given panel
-        for (Component panelInList : panelList) {
-            if (panelInList != panel) {
-                panelInList.setVisible(false);
-            }
-        }
-        menuTabbedPane.setVisible(false);
-        panel.setVisible(true);
+    public void changePanel(String panel) {
+        CardLayout cl = (CardLayout)(centerMenu.getLayout());
+        cl.show(centerMenu, panel);
     }
 
     public JPanel createDishPanel(Dish dish) {
