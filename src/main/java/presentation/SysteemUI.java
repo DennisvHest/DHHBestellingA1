@@ -32,7 +32,7 @@ import manager.OrderManager;
 public class SysteemUI extends JFrame {
 
     private JFrame frame;
-    private JPanel navBarPanel, orderedItemPanel, receiptPanel;
+    private JPanel centerMenu, navBarPanel, orderOverviewPanel, receiptPanel;
     private JSplitPane menuPane;
     private ArrayList<Component> panelList;
     private JTabbedPane menuTabbedPane;
@@ -70,10 +70,10 @@ public class SysteemUI extends JFrame {
         frame.add(menuPane, BorderLayout.CENTER);
 
         //Menu with list of ordered items
-        orderedItemPanel = new JPanel();
-        panelList.add(orderedItemPanel);
-        add(orderedItemPanel, BorderLayout.CENTER);
-        orderedItemPanel.setVisible(false);
+        orderOverviewPanel = new OrderOverviewPanel();
+        add(orderOverviewPanel, BorderLayout.CENTER);
+        orderOverviewPanel.setVisible(false);
+        panelList.add(orderOverviewPanel);
 
         //Menu with receipt
         receiptPanel = new JPanel();
@@ -113,9 +113,9 @@ public class SysteemUI extends JFrame {
                     menuTabbedPane.setVisible(true);
                 });
 
-                orderedItemButton = new JButton("Bestelde Gerechten");
+                orderedItemButton = new JButton("Besteloverzicht");
                 orderedItemButton.addActionListener((ActionEvent e) -> {
-                    changePanel(orderedItemPanel);
+                    changePanel(orderOverviewPanel);
                 });
 
                 receiptButton = new JButton("Rekening");
@@ -198,9 +198,27 @@ public class SysteemUI extends JFrame {
             orderSumArea.setText(text);
         }
     }
+    
+    class OrderOverviewPanel extends JPanel {
+        
+        //Menu that shows the pending order and the previously sent orders
+        public OrderOverviewPanel() {
+            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+            
+            setBackground(Color.red);
+            
+            add(new JLabel("Bestelling in afwachting van bevestiging"));
+            
+            //add(createPendingOrderPanel());
+        }
+        
+//        public JPanel createPendingOrderPanel() {
+//            
+//        }
+    }
 
     public void changePanel(Component panel) {
-        //Set every panel to invisible except the given panel;
+        //Set every panel to invisible except the given panel
         for (Component panelInList : panelList) {
             if (panelInList != panel) {
                 panelInList.setVisible(false);
@@ -237,14 +255,17 @@ public class SysteemUI extends JFrame {
 
         JButton addButton = new JButton("Voeg toe");
         addButton.addActionListener((ActionEvent e) -> {
+            //If a pending order does not exists, create one.
             orderSummaryPanel.setSumText("Hallo");
-            if (orderManager.pendingOrderExist() == false) {
+            if (!orderManager.pendingOrderExist()) {
                 Order pendingOrder = new Order(1);
                 orderManager.addOrder(pendingOrder);
             }
-
+            
+            //Add a new DishOrder to the pending order
             orderManager.getPendingOrder().addDishOrder(new DishOrder(1, dish, 1));
             
+            //Refresh the OrderSummary text
             orderSummaryPanel.setSumText(orderManager.printPendingOrders());
         });
 
