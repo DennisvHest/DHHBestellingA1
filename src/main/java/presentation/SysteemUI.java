@@ -20,6 +20,7 @@ import javax.swing.JTabbedPane;
 import manager.UIManager;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -35,12 +36,11 @@ import manager.OrderManager;
 public class SysteemUI extends JFrame {
 
     private JFrame frame;
-    private JPanel centerMenu, navBarPanel, orderOverviewPanel, receiptPanel;
+    private JPanel centerMenu, orderOverviewPanel, receiptPanel;
     private JSplitPane menuPane;
-    private ArrayList<Component> panelList;
+    private List<Component> panelList;
     private JTabbedPane menuTabbedPane;
     private OrderSummaryPanel orderSummaryPanel;
-    private UIManager manager;
     private DishManager dishManager;
     private OrderManager orderManager;
 
@@ -105,7 +105,7 @@ public class SysteemUI extends JFrame {
         class NavButtonPanel extends JPanel {
 
             private JButton menuButton, orderedItemButton, receiptButton;
-            private ArrayList<JButton> navBarButtons;
+            private List<JButton> navBarButtons;
 
             public NavButtonPanel() {
                 setLayout(new GridLayout(1, 3));
@@ -242,7 +242,7 @@ public class SysteemUI extends JFrame {
 
     public JPanel createDishPanel(Dish dish) {
         JPanel dishPanel = new JPanel();
-        ArrayList<JLabel> labels = new ArrayList<>();
+        List<JLabel> labels = new ArrayList<>();
 
         dishPanel.setPreferredSize(new Dimension(300, 400));
 

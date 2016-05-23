@@ -2,6 +2,7 @@ package domain;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -14,7 +15,7 @@ public class Order {
     private boolean payed;
     private String orderStatus;
     private int tableNr;
-    private ArrayList<DishOrder> dishOrders;
+    private List<DishOrder> dishOrders;
     //private ArrayList<DrinkOrder> drinkOrders;
 
     public Order(int tableNr) {
@@ -48,7 +49,7 @@ public class Order {
     }
 
     public ArrayList<DishOrder> getDishOrders() {
-        return dishOrders;
+        return (ArrayList<DishOrder>) dishOrders;
     }
     
     public void addDishOrder(DishOrder order) {

@@ -2,6 +2,7 @@ package datastorage;
 
 import domain.Dish;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -9,7 +10,7 @@ import java.util.ArrayList;
  */
 public class DishDAO {
 
-    private ArrayList<Dish> dishList;
+    private List<Dish> dishList;
 
     public DishDAO() {
         dishList = new ArrayList<>();
@@ -28,7 +29,7 @@ public class DishDAO {
     }
 
     public ArrayList<Dish> getDishListBySort(String sort) {
-        ArrayList<Dish> dishes = new ArrayList<>();
+        List<Dish> dishes = new ArrayList<>();
 
         for (Dish dish : dishList) {
             if (dish.getSortDish().equals(sort)) {
@@ -36,6 +37,6 @@ public class DishDAO {
             }
         }
 
-        return dishes;
+        return (ArrayList<Dish>) dishes;
     }
 }
