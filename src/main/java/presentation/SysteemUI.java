@@ -55,6 +55,7 @@ public class SysteemUI extends JFrame {
         panelList = new ArrayList<>();
 
         dishManager = new DishManager();
+        orderManager = new OrderManager();
 
         //Navigation bar with buttons
         frame.add(new NavBarPanel(), BorderLayout.NORTH);
@@ -267,7 +268,6 @@ public class SysteemUI extends JFrame {
         JButton addButton = new JButton("Voeg toe");
         addButton.addActionListener((ActionEvent e) -> {
             //If a pending order does not exists, create one.
-            orderSummaryPanel.setSumText("Hallo");
             if (!orderManager.pendingOrderExist()) {
                 Order pendingOrder = new Order(1);
                 orderManager.addOrder(pendingOrder);

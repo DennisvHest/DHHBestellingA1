@@ -22,6 +22,8 @@ public class Order {
 
         payed = false;
         orderStatus = "pending";
+        
+        dishOrders = new ArrayList<>();
     }
 
     //Getters
