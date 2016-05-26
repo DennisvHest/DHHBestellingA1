@@ -17,10 +17,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import manager.UIManager;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.List;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -218,16 +218,26 @@ public class SysteemUI extends JFrame {
         
         public JPanel createPendingOrderPanel() {
             JPanel pendingOrderPanel = new JPanel();
-            pendingOrderPanel.setLayout(new GridLayout(1, 6));
+            pendingOrderPanel.setLayout(new BoxLayout(pendingOrderPanel, BoxLayout.X_AXIS));
             pendingOrderPanel.setPreferredSize(new Dimension(1000, 100));
             pendingOrderPanel.setBackground(Color.white);
             
-            pendingOrderPanel.add(new JLabel(""));
+            pendingOrderPanel.add(Box.createGlue());
             pendingOrderPanel.add(new JLabel("Portie Olijven"));
+            pendingOrderPanel.add(Box.createGlue());
             pendingOrderPanel.add(new JLabel("Voorgerecht"));
+            pendingOrderPanel.add(Box.createGlue());
             pendingOrderPanel.add(new JLabel("Aantal"));
-            pendingOrderPanel.add(new JSpinner());
-            pendingOrderPanel.add(new JButton("X"));
+            
+            JSpinner amountSpinner = new JSpinner();
+            amountSpinner.setMaximumSize(new Dimension(50, 50));
+            pendingOrderPanel.add(amountSpinner);
+            
+            pendingOrderPanel.add(Box.createGlue());
+            
+            JButton deleteOrderButton = new JButton("X");
+            deleteOrderButton.setMinimumSize(new Dimension(100, 100));
+            pendingOrderPanel.add(deleteOrderButton);
             
             pendingOrderPanel.setAlignmentX(CENTER_ALIGNMENT);
             
