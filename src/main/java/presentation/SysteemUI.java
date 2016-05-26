@@ -214,7 +214,8 @@ public class SysteemUI extends JFrame {
 
             add(new JLabel("Bestelling in afwachting van bevestiging"));
 
-            ordersPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            ordersPanel = new JPanel();
+            ordersPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
             add(ordersPanel);
         }
 
@@ -223,31 +224,56 @@ public class SysteemUI extends JFrame {
 
             if (orderManager.pendingOrderExist()) {
                 for (KitchenOrder kitchenOrder : orderManager.getPendingOrder().getKitchenOrders()) {
-                    ordersPanel.add(createPendingOrderPanel(kitchenOrder));
+                    ordersPanel.add(createOrderPanel(kitchenOrder, "pending"));
+                }
+
+                if (!orderManager.getPendingOrder().getKitchenOrders().isEmpty()) {
+                    JButton confirmButton = new JButton("Bevestig");
+                    confirmButton.addActionListener((ActionEvent e) -> {
+                        orderManager.getPendingOrder().setOrderStatus("placed");
+                        
+                        //Refresh the OrderOverviewPanel
+                        refreshOverviewPanel();
+                        changePanel("menuPane");
+                        changePanel("orderOverviewPanel");
+                        
+                        //Refresh the OrderSummary text
+                        orderSummaryPanel.setSumText(orderManager.printPendingOrders());
+                    });
+
+                    JPanel confirmPanel = new JPanel();
+                    confirmPanel.setPreferredSize(new Dimension(1000, 100));
+                    confirmPanel.add(confirmButton);
+                    ordersPanel.add(confirmPanel);
+                }
+            }
+            
+            if (orderManager.placedOrderExist()) {
+                for (KitchenOrder kitchenOrder : orderManager.getPlacedOrder().getKitchenOrders()) {
+                    ordersPanel.add(createOrderPanel(kitchenOrder, "placed"));
                 }
             }
         }
 
-        public JPanel createPendingOrderPanel(KitchenOrder kitchenOrder) {
-            JPanel pendingOrderPanel = new JPanel();
-            pendingOrderPanel.setLayout(new BoxLayout(pendingOrderPanel, BoxLayout.X_AXIS));
-            pendingOrderPanel.setPreferredSize(new Dimension(1000, 100));
-            pendingOrderPanel.setBackground(Color.white);
+        public JPanel createOrderPanel(KitchenOrder kitchenOrder, String orderType) {
+            JPanel orderPanel = new JPanel();
+            orderPanel.setLayout(new BoxLayout(orderPanel, BoxLayout.X_AXIS));
+            orderPanel.setPreferredSize(new Dimension(1000, 100));
 
             Dish dishInOrder = kitchenOrder.getDish();
 
-            pendingOrderPanel.add(Box.createGlue());
-            pendingOrderPanel.add(new JLabel(dishInOrder.getNameDish()));
-            pendingOrderPanel.add(Box.createGlue());
-            pendingOrderPanel.add(new JLabel(dishInOrder.getSortDish()));
-            pendingOrderPanel.add(Box.createGlue());
-            pendingOrderPanel.add(new JLabel("Aantal"));
+            orderPanel.add(Box.createGlue());
+            orderPanel.add(new JLabel(dishInOrder.getNameDish()));
+            orderPanel.add(Box.createGlue());
+            orderPanel.add(new JLabel(dishInOrder.getSortDish()));
+            orderPanel.add(Box.createGlue());
+            orderPanel.add(new JLabel("Aantal"));
 
             JSpinner amountSpinner = new JSpinner();
             amountSpinner.setMaximumSize(new Dimension(50, 50));
-            pendingOrderPanel.add(amountSpinner);
+            orderPanel.add(amountSpinner);
 
-            pendingOrderPanel.add(Box.createGlue());
+            orderPanel.add(Box.createGlue());
 
             JButton deleteOrderButton = new JButton("X");
             deleteOrderButton.setMinimumSize(new Dimension(100, 100));
@@ -262,11 +288,20 @@ public class SysteemUI extends JFrame {
                 //Refresh the OrderSummary text
                 orderSummaryPanel.setSumText(orderManager.printPendingOrders());
             });
-            pendingOrderPanel.add(deleteOrderButton);
+            orderPanel.add(deleteOrderButton);
 
-            pendingOrderPanel.setAlignmentX(CENTER_ALIGNMENT);
+            orderPanel.setAlignmentX(CENTER_ALIGNMENT);
+            
+            if (orderType == "pending") {
+                orderPanel.setBackground(Color.white);
+            }
+            else {
+                orderPanel.setBackground(Color.gray);
+                amountSpinner.setEnabled(false);
+                deleteOrderButton.setEnabled(false);
+            }
 
-            return pendingOrderPanel;
+            return orderPanel;
         }
     }
 
@@ -308,9 +343,9 @@ public class SysteemUI extends JFrame {
                 orderManager.addOrder(pendingOrder);
             }
 
+            //If a KitchenOrder with this dish already exists it should not be created again
             boolean createOrder = true;
 
-            //Add a new KitchenOrder to the pending order
             for (KitchenOrder kitchenOrder : orderManager.getPendingOrder().getKitchenOrders()) {
                 if (kitchenOrder.getDish() == dish) {
                     createOrder = false;
@@ -318,6 +353,7 @@ public class SysteemUI extends JFrame {
             }
 
             if (createOrder == true) {
+                //Add a new KitchenOrder to the pending order
                 orderManager.getPendingOrder().addKitchenOrder(new KitchenOrder(1, dish, 1));
             }
 

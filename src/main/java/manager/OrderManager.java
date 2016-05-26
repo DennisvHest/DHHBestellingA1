@@ -61,4 +61,30 @@ public class OrderManager {
         
         return buffer.toString();
     }
+    
+    public boolean placedOrderExist() {
+        //Check if there is a placed order
+        boolean exists = false;
+
+        for (RestaurantOrder order : orders) {
+            if (!"pending".equals(order.getOrderStatus())) {
+                exists = true;
+            }
+        }
+
+        return exists;
+    }
+    
+    public RestaurantOrder getPlacedOrder() {
+        //Return the pending order
+        RestaurantOrder returnOrder = null;
+
+        for (RestaurantOrder order : orders) {
+            if (!"pending".equals(order.getOrderStatus())) {
+                returnOrder = order;
+            }
+        }
+
+        return returnOrder;
+    }
 }

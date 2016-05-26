@@ -52,6 +52,11 @@ public class RestaurantOrder {
         return (ArrayList<KitchenOrder>) kitchenOrders;
     }
     
+    //Setters
+    public void setOrderStatus(String status) {
+        orderStatus = status;
+    }
+    
     public void addKitchenOrder(KitchenOrder order) {
         kitchenOrders.add(order);
     }
