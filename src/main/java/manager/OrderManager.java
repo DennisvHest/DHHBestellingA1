@@ -1,7 +1,7 @@
 package manager;
 
-import domain.DishOrder;
-import domain.Order;
+import domain.KitchenOrder;
+import domain.RestaurantOrder;
 import java.util.ArrayList;
 
 /**
@@ -10,13 +10,13 @@ import java.util.ArrayList;
  */
 public class OrderManager {
 
-    private ArrayList<Order> orders;
+    private ArrayList<RestaurantOrder> orders;
 
     public OrderManager() {
         orders = new ArrayList<>();
     }
 
-    public void addOrder(Order order) {
+    public void addOrder(RestaurantOrder order) {
         orders.add(order);
     }
 
@@ -24,7 +24,7 @@ public class OrderManager {
         //Check if there is a pending order
         boolean exists = false;
 
-        for (Order order : orders) {
+        for (RestaurantOrder order : orders) {
             if ("pending".equals(order.getOrderStatus())) {
                 exists = true;
             }
@@ -33,11 +33,11 @@ public class OrderManager {
         return exists;
     }
 
-    public Order getPendingOrder() {
+    public RestaurantOrder getPendingOrder() {
         //Return the pending order
-        Order returnOrder = null;
+        RestaurantOrder returnOrder = null;
 
-        for (Order order : orders) {
+        for (RestaurantOrder order : orders) {
             if ("pending".equals(order.getOrderStatus())) {
                 returnOrder = order;
             }
@@ -49,10 +49,10 @@ public class OrderManager {
     public String printPendingOrders() {
         StringBuffer buffer = new StringBuffer();
         
-        for (Order order : orders)
+        for (RestaurantOrder order : orders)
         {
             if ("pending".equals(order.getOrderStatus())) {
-                for (DishOrder dishOrder : order.getDishOrders()) {
+                for (KitchenOrder dishOrder : order.getKitchenOrders()) {
                     buffer.append(dishOrder.getDish().getNameDish());
                     buffer.append("\n");
                 }

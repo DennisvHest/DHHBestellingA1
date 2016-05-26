@@ -1,8 +1,8 @@
 package presentation;
 
 import domain.Dish;
-import domain.DishOrder;
-import domain.Order;
+import domain.KitchenOrder;
+import domain.RestaurantOrder;
 import manager.DishManager;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -36,11 +36,12 @@ import manager.OrderManager;
 public class SysteemUI extends JFrame {
 
     private JFrame frame;
-    private JPanel centerMenu, orderOverviewPanel, receiptPanel;
+    private JPanel centerMenu, receiptPanel;
     private JSplitPane menuPane;
     private List<Component> panelList;
     private JTabbedPane menuTabbedPane;
     private OrderSummaryPanel orderSummaryPanel;
+    private OrderOverviewPanel orderOverviewPanel;
     private DishManager dishManager;
     private OrderManager orderManager;
 
@@ -67,7 +68,7 @@ public class SysteemUI extends JFrame {
         menuTabbedPane.add("Nagerechten", new JScrollPane(new DessertPanel()));
         menuTabbedPane.add("Dranken", new JScrollPane(new DrinkPanel()));
         menuTabbedPane.setMinimumSize(new Dimension(1100, 1000));
-        
+
         orderSummaryPanel = new OrderSummaryPanel();
         menuPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, menuTabbedPane, orderSummaryPanel);
 
@@ -76,7 +77,7 @@ public class SysteemUI extends JFrame {
 
         //Menu with receipt
         receiptPanel = new JPanel();
-        
+
         //Panel with CardLayout that holds all other menus
         centerMenu = new JPanel();
         centerMenu.setLayout(new CardLayout());
@@ -148,7 +149,7 @@ public class SysteemUI extends JFrame {
 
         public AppetizerPanel() {
             //Display every appetizer
-            for (Dish dish : dishManager.findDishes("Appetizer")) {
+            for (Dish dish : dishManager.getDishListBySort("Appetizer")) {
                 add(createDishPanel(dish));
             }
         }
@@ -158,7 +159,7 @@ public class SysteemUI extends JFrame {
 
         public MainCoursePanel() {
             //Display every main course
-            for (Dish dish : dishManager.findDishes("MainCourse")) {
+            for (Dish dish : dishManager.getDishListBySort("MainCourse")) {
                 add(createDishPanel(dish));
             }
         }
@@ -168,7 +169,7 @@ public class SysteemUI extends JFrame {
 
         public DessertPanel() {
             //Display every dessert
-            for (Dish dish : dishManager.findDishes("Dessert")) {
+            for (Dish dish : dishManager.getDishListBySort("Dessert")) {
                 add(createDishPanel(dish));
             }
         }
@@ -178,7 +179,7 @@ public class SysteemUI extends JFrame {
 
         public DrinkPanel() {
             //Display every drink
-            for (Dish dish : dishManager.findDishes("Drink")) {
+            for (Dish dish : dishManager.getDishListBySort("Drink")) {
                 add(createDishPanel(dish));
             }
         }
@@ -202,51 +203,75 @@ public class SysteemUI extends JFrame {
             orderSumArea.setText(text);
         }
     }
-    
+
     class OrderOverviewPanel extends JPanel {
-        
+
+        private JPanel ordersPanel;
+
         //Menu that shows the pending order and the previously sent orders
         public OrderOverviewPanel() {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            
+
             add(new JLabel("Bestelling in afwachting van bevestiging"));
-            
-            JPanel ordersPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+            ordersPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
             add(ordersPanel);
-            ordersPanel.add(createPendingOrderPanel());
         }
-        
-        public JPanel createPendingOrderPanel() {
+
+        public void refreshOverviewPanel() {
+            ordersPanel.removeAll();
+
+            if (orderManager.pendingOrderExist()) {
+                for (KitchenOrder kitchenOrder : orderManager.getPendingOrder().getKitchenOrders()) {
+                    ordersPanel.add(createPendingOrderPanel(kitchenOrder));
+                }
+            }
+        }
+
+        public JPanel createPendingOrderPanel(KitchenOrder kitchenOrder) {
             JPanel pendingOrderPanel = new JPanel();
             pendingOrderPanel.setLayout(new BoxLayout(pendingOrderPanel, BoxLayout.X_AXIS));
             pendingOrderPanel.setPreferredSize(new Dimension(1000, 100));
             pendingOrderPanel.setBackground(Color.white);
-            
+
+            Dish dishInOrder = kitchenOrder.getDish();
+
             pendingOrderPanel.add(Box.createGlue());
-            pendingOrderPanel.add(new JLabel("Portie Olijven"));
+            pendingOrderPanel.add(new JLabel(dishInOrder.getNameDish()));
             pendingOrderPanel.add(Box.createGlue());
-            pendingOrderPanel.add(new JLabel("Voorgerecht"));
+            pendingOrderPanel.add(new JLabel(dishInOrder.getSortDish()));
             pendingOrderPanel.add(Box.createGlue());
             pendingOrderPanel.add(new JLabel("Aantal"));
-            
+
             JSpinner amountSpinner = new JSpinner();
             amountSpinner.setMaximumSize(new Dimension(50, 50));
             pendingOrderPanel.add(amountSpinner);
-            
+
             pendingOrderPanel.add(Box.createGlue());
-            
+
             JButton deleteOrderButton = new JButton("X");
             deleteOrderButton.setMinimumSize(new Dimension(100, 100));
+            deleteOrderButton.addActionListener((ActionEvent e) -> {
+                orderManager.getPendingOrder().removeKitchenOrder(kitchenOrder);
+
+                //Refresh the order overview
+                orderOverviewPanel.refreshOverviewPanel();
+                changePanel("menuPane");
+                changePanel("orderOverviewPanel");
+
+                //Refresh the OrderSummary text
+                orderSummaryPanel.setSumText(orderManager.printPendingOrders());
+            });
             pendingOrderPanel.add(deleteOrderButton);
-            
+
             pendingOrderPanel.setAlignmentX(CENTER_ALIGNMENT);
-            
+
             return pendingOrderPanel;
         }
     }
 
     public void changePanel(String panel) {
-        CardLayout cl = (CardLayout)(centerMenu.getLayout());
+        CardLayout cl = (CardLayout) (centerMenu.getLayout());
         cl.show(centerMenu, panel);
     }
 
@@ -279,15 +304,28 @@ public class SysteemUI extends JFrame {
         addButton.addActionListener((ActionEvent e) -> {
             //If a pending order does not exists, create one.
             if (!orderManager.pendingOrderExist()) {
-                Order pendingOrder = new Order(1);
+                RestaurantOrder pendingOrder = new RestaurantOrder(1);
                 orderManager.addOrder(pendingOrder);
             }
-            
-            //Add a new DishOrder to the pending order
-            orderManager.getPendingOrder().addDishOrder(new DishOrder(1, dish, 1));
-            
+
+            boolean createOrder = true;
+
+            //Add a new KitchenOrder to the pending order
+            for (KitchenOrder kitchenOrder : orderManager.getPendingOrder().getKitchenOrders()) {
+                if (kitchenOrder.getDish() == dish) {
+                    createOrder = false;
+                }
+            }
+
+            if (createOrder == true) {
+                orderManager.getPendingOrder().addKitchenOrder(new KitchenOrder(1, dish, 1));
+            }
+
             //Refresh the OrderSummary text
             orderSummaryPanel.setSumText(orderManager.printPendingOrders());
+
+            //Refresh the order overview
+            orderOverviewPanel.refreshOverviewPanel();
         });
 
         orderPanel.add(addButton);

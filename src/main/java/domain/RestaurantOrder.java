@@ -8,23 +8,23 @@ import java.util.List;
  *
  * @author Dennis
  */
-public class Order {
+public class RestaurantOrder {
 
     private int orderNr;
     private Date orderDate;
     private boolean payed;
     private String orderStatus;
     private int tableNr;
-    private List<DishOrder> dishOrders;
+    private List<KitchenOrder> kitchenOrders;
     //private ArrayList<DrinkOrder> drinkOrders;
 
-    public Order(int tableNr) {
+    public RestaurantOrder(int tableNr) {
         this.tableNr = tableNr;
 
         payed = false;
         orderStatus = "pending";
         
-        dishOrders = new ArrayList<>();
+        kitchenOrders = new ArrayList<>();
     }
 
     //Getters
@@ -48,11 +48,15 @@ public class Order {
         return tableNr;
     }
 
-    public ArrayList<DishOrder> getDishOrders() {
-        return (ArrayList<DishOrder>) dishOrders;
+    public ArrayList<KitchenOrder> getKitchenOrders() {
+        return (ArrayList<KitchenOrder>) kitchenOrders;
     }
     
-    public void addDishOrder(DishOrder order) {
-        dishOrders.add(order);
+    public void addKitchenOrder(KitchenOrder order) {
+        kitchenOrders.add(order);
+    }
+    
+    public void removeKitchenOrder(KitchenOrder order) {
+        kitchenOrders.remove(order);
     }
 }
