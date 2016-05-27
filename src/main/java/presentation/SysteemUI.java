@@ -28,6 +28,7 @@ import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import manager.OrderManager;
@@ -235,15 +236,15 @@ public class SysteemUI extends JFrame {
                     JButton confirmButton = new JButton("Bevestig");
                     confirmButton.addActionListener((ActionEvent e) -> {
                         orderManager.getPendingOrder().setOrderStatus("placed");
-                        
+
                         //Refresh the OrderOverviewPanel
                         refreshOverviewPanel();
                         changePanel("menuPane");
                         changePanel("orderOverviewPanel");
-                        
+
                         //Refresh the OrderSummary text
                         orderSummaryPanel.setSumText(orderManager.printPendingOrders());
-                        
+
                         //Refresh the OrderReceiptPanel
                         receiptPanel.refreshOrderReceiptPanel();
                     });
@@ -254,10 +255,17 @@ public class SysteemUI extends JFrame {
                     ordersPanel.add(confirmPanel);
                 }
             }
-            
+
             if (orderManager.placedOrderExist()) {
-                for (KitchenOrder kitchenOrder : orderManager.getPlacedOrder().getKitchenOrders()) {
-                    ordersPanel.add(createOrderPanel(kitchenOrder, "placed"));
+                for (RestaurantOrder order : orderManager.getPlacedOrders()) {
+                    JPanel orderHeaderPanel = new JPanel();
+                    orderHeaderPanel.setPreferredSize(new Dimension(1000, 20));
+                    orderHeaderPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+                    orderHeaderPanel.add(new JLabel("Geplaatste bestelling #" + Integer.toString(order.getOrderNr())));
+                    ordersPanel.add(orderHeaderPanel);
+                    for (KitchenOrder kitchenOrder : order.getKitchenOrders()) {
+                        ordersPanel.add(createOrderPanel(kitchenOrder, "placed"));
+                    }
                 }
             }
         }
@@ -301,11 +309,10 @@ public class SysteemUI extends JFrame {
             orderPanel.add(deleteOrderButton);
 
             orderPanel.setAlignmentX(CENTER_ALIGNMENT);
-            
+
             if (orderType == "pending") {
                 orderPanel.setBackground(Color.white);
-            }
-            else {
+            } else {
                 orderPanel.setBackground(Color.gray);
                 amountSpinner.setEnabled(false);
                 deleteOrderButton.setEnabled(false);
@@ -314,21 +321,22 @@ public class SysteemUI extends JFrame {
             return orderPanel;
         }
     }
-    
+
     class ReceiptPanel extends JPanel {
+
         private JPanel orderReceiptsPanel;
-        
+
         public ReceiptPanel() {
-            setLayout(new FlowLayout((int) LEFT_ALIGNMENT));
+            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             add(new JLabel("Rekening"));
-            
+
             orderReceiptsPanel = new JPanel();
             add(orderReceiptsPanel);
         }
-        
+
         public void refreshOrderReceiptPanel() {
             orderReceiptsPanel.removeAll();
-            
+
             //For every unpaid order, create a panel with order information
             for (RestaurantOrder order : orderManager.getOrders()) {
                 if (!"pending".equals(order.getOrderStatus()) && !"payed".equals(order.getOrderStatus())) {
@@ -336,12 +344,34 @@ public class SysteemUI extends JFrame {
                 }
             }
         }
-        
+
         public JPanel createOrderReceiptPanel(RestaurantOrder order) {
             JPanel orderReceiptPanel = new JPanel();
-            
-            orderReceiptPanel.add(new JLabel(Integer.toString(order.getOrderNr())));
-            
+            orderReceiptPanel.setLayout(new BoxLayout(orderReceiptPanel, BoxLayout.Y_AXIS));
+
+            orderReceiptPanel.add(new JLabel("Niet Betaalde bestelling #" + Integer.toString(order.getOrderNr())));
+
+            JPanel orderTable = new JPanel();
+            orderTable.setLayout(new GridLayout(order.getKitchenOrders().size() + 1, 4, 10, 10));
+            orderTable.add(new JLabel("Naam gerecht"));
+            orderTable.add(new JLabel("Prijs per gerecht"));
+            orderTable.add(new JLabel("Aantal"));
+            orderTable.add(new JLabel("Totaalprijs gerecht"));
+
+            for (KitchenOrder kitchenOrder : order.getKitchenOrders()) {
+                String name = kitchenOrder.getDish().getNameDish();
+                int amount = kitchenOrder.getDishAmount();
+                double pricePerDish = kitchenOrder.getDish().getpriceDish();
+                double totalPriceDish = pricePerDish * amount;
+
+                orderTable.add(new JLabel(name));
+                orderTable.add(new JLabel("€ " + String.format("%.2f", pricePerDish)));
+                orderTable.add(new JLabel(Integer.toString(amount)));
+                orderTable.add(new JLabel("€ " + String.format("%.2f", totalPriceDish)));
+            }
+
+            orderReceiptPanel.add(orderTable);
+
             return orderReceiptPanel;
         }
     }

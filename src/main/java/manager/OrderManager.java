@@ -80,16 +80,16 @@ public class OrderManager {
         return exists;
     }
     
-    public RestaurantOrder getPlacedOrder() {
+    public ArrayList<RestaurantOrder> getPlacedOrders() {
         //Return the pending order
-        RestaurantOrder returnOrder = null;
+        List placedOrders = new ArrayList<RestaurantOrder>();
 
         for (RestaurantOrder order : orders) {
             if (!"pending".equals(order.getOrderStatus())) {
-                returnOrder = order;
+                placedOrders.add(order);
             }
         }
 
-        return returnOrder;
+        return (ArrayList<RestaurantOrder>) placedOrders;
     }
 }
