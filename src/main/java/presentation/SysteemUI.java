@@ -27,6 +27,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import manager.OrderManager;
 
 /**
@@ -36,12 +39,13 @@ import manager.OrderManager;
 public class SysteemUI extends JFrame {
 
     private JFrame frame;
-    private JPanel centerMenu, receiptPanel;
+    private JPanel centerMenu;
     private JSplitPane menuPane;
     private List<Component> panelList;
     private JTabbedPane menuTabbedPane;
     private OrderSummaryPanel orderSummaryPanel;
     private OrderOverviewPanel orderOverviewPanel;
+    private ReceiptPanel receiptPanel;
     private DishManager dishManager;
     private OrderManager orderManager;
 
@@ -76,7 +80,7 @@ public class SysteemUI extends JFrame {
         orderOverviewPanel = new OrderOverviewPanel();
 
         //Menu with receipt
-        receiptPanel = new JPanel();
+        receiptPanel = new ReceiptPanel();
 
         //Panel with CardLayout that holds all other menus
         centerMenu = new JPanel();
@@ -239,6 +243,9 @@ public class SysteemUI extends JFrame {
                         
                         //Refresh the OrderSummary text
                         orderSummaryPanel.setSumText(orderManager.printPendingOrders());
+                        
+                        //Refresh the OrderReceiptPanel
+                        receiptPanel.refreshOrderReceiptPanel();
                     });
 
                     JPanel confirmPanel = new JPanel();
@@ -269,8 +276,11 @@ public class SysteemUI extends JFrame {
             orderPanel.add(Box.createGlue());
             orderPanel.add(new JLabel("Aantal"));
 
-            JSpinner amountSpinner = new JSpinner();
+            JSpinner amountSpinner = new JSpinner(new SpinnerNumberModel(kitchenOrder.getDishAmount(), 1, 100, 1));
             amountSpinner.setMaximumSize(new Dimension(50, 50));
+            amountSpinner.addChangeListener((ChangeEvent e) -> {
+                kitchenOrder.setDishAmount((int) amountSpinner.getValue());
+            });
             orderPanel.add(amountSpinner);
 
             orderPanel.add(Box.createGlue());
@@ -302,6 +312,37 @@ public class SysteemUI extends JFrame {
             }
 
             return orderPanel;
+        }
+    }
+    
+    class ReceiptPanel extends JPanel {
+        private JPanel orderReceiptsPanel;
+        
+        public ReceiptPanel() {
+            setLayout(new FlowLayout((int) LEFT_ALIGNMENT));
+            add(new JLabel("Rekening"));
+            
+            orderReceiptsPanel = new JPanel();
+            add(orderReceiptsPanel);
+        }
+        
+        public void refreshOrderReceiptPanel() {
+            orderReceiptsPanel.removeAll();
+            
+            //For every unpaid order, create a panel with order information
+            for (RestaurantOrder order : orderManager.getOrders()) {
+                if (!"pending".equals(order.getOrderStatus()) && !"payed".equals(order.getOrderStatus())) {
+                    orderReceiptsPanel.add(createOrderReceiptPanel(order));
+                }
+            }
+        }
+        
+        public JPanel createOrderReceiptPanel(RestaurantOrder order) {
+            JPanel orderReceiptPanel = new JPanel();
+            
+            orderReceiptPanel.add(new JLabel(Integer.toString(order.getOrderNr())));
+            
+            return orderReceiptPanel;
         }
     }
 

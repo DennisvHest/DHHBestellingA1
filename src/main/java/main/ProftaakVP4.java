@@ -5,10 +5,7 @@
  */
 package main;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import datastorage.DatabaseConnection;
 import presentation.SysteemUI;
 
 /**
@@ -21,6 +18,8 @@ public class ProftaakVP4 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        DatabaseConnection dbConnection = new DatabaseConnection();
+        dbConnection.openConnection();
         SysteemUI ui = new SysteemUI();
     }
     

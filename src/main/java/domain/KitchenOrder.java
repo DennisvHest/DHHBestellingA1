@@ -17,6 +17,14 @@ public class KitchenOrder {
         totalPriceDish = dish.getpriceDish() * dishAmount;
     }
     
+    public int getDishAmount() {
+        return dishAmount;
+    }
+    
+    public void setDishAmount(int dishAmount) {
+        this.dishAmount = dishAmount;
+    }
+    
     public Dish getDish() {
         return dish;
     }

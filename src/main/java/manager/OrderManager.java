@@ -3,6 +3,7 @@ package manager;
 import domain.KitchenOrder;
 import domain.RestaurantOrder;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -10,7 +11,7 @@ import java.util.ArrayList;
  */
 public class OrderManager {
 
-    private ArrayList<RestaurantOrder> orders;
+    private List<RestaurantOrder> orders;
 
     public OrderManager() {
         orders = new ArrayList<>();
@@ -18,6 +19,10 @@ public class OrderManager {
 
     public void addOrder(RestaurantOrder order) {
         orders.add(order);
+    }
+    
+    public ArrayList<RestaurantOrder> getOrders() {
+        return (ArrayList<RestaurantOrder>) orders;
     }
 
     public boolean pendingOrderExist() {
