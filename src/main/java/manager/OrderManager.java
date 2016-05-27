@@ -20,7 +20,7 @@ public class OrderManager {
     public void addOrder(RestaurantOrder order) {
         orders.add(order);
     }
-    
+
     public ArrayList<RestaurantOrder> getOrders() {
         return (ArrayList<RestaurantOrder>) orders;
     }
@@ -50,12 +50,11 @@ public class OrderManager {
 
         return returnOrder;
     }
-    
+
     public String printPendingOrders() {
         StringBuffer buffer = new StringBuffer();
-        
-        for (RestaurantOrder order : orders)
-        {
+
+        for (RestaurantOrder order : orders) {
             if ("pending".equals(order.getOrderStatus())) {
                 for (KitchenOrder dishOrder : order.getKitchenOrders()) {
                     buffer.append(dishOrder.getDish().getNameDish());
@@ -63,10 +62,10 @@ public class OrderManager {
                 }
             }
         }
-        
+
         return buffer.toString();
     }
-    
+
     public boolean placedOrderExist() {
         //Check if there is a placed order
         boolean exists = false;
@@ -79,7 +78,7 @@ public class OrderManager {
 
         return exists;
     }
-    
+
     public ArrayList<RestaurantOrder> getPlacedOrders() {
         //Return the pending order
         List placedOrders = new ArrayList<RestaurantOrder>();
