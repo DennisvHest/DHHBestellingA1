@@ -1,5 +1,6 @@
 package manager;
 
+import datastorage.OrderDAO;
 import domain.KitchenOrder;
 import domain.RestaurantOrder;
 import java.util.ArrayList;
@@ -12,8 +13,10 @@ import java.util.List;
 public class OrderManager {
 
     private List<RestaurantOrder> orders;
+    private OrderDAO orderDAO;
 
     public OrderManager() {
+        orderDAO = new OrderDAO();
         orders = new ArrayList<>();
     }
 
@@ -90,5 +93,15 @@ public class OrderManager {
         }
 
         return (ArrayList<RestaurantOrder>) placedOrders;
+    }
+    
+    public void confirmOrder() {
+        orderDAO.insertOrder(getPendingOrder());
+        
+        getPendingOrder().setOrderStatus("placed");
+    }
+    
+    public int getAutoIncrementValue() {
+        return orderDAO.getAutoIncrementValue();
     }
 }

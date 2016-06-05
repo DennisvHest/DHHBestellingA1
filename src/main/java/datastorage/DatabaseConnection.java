@@ -28,13 +28,14 @@ public class DatabaseConnection {
             try {
                 // Try to create a connection with the database
                 connection = DriverManager.getConnection(
-                        "jdbc:mysql://145.48.6.147:3306/23ivp4a", "root", "10ec4u");
+                        "jdbc:mysql://localhost/23ivp4a", "root", "");
 
                 if (connection != null) {
                     statement = connection.createStatement();
                 }
 
                 result = true;
+                System.out.println("Verbinding met de database is gelukt!");
             } catch (SQLException e) {
                 System.out.println(e);
                 result = false;
@@ -93,7 +94,7 @@ public class DatabaseConnection {
         return resultset;
     }
 
-    public boolean executeSQLDeleteStatement(String query) {
+    public boolean executeSQLIUDStatement(String query) {
         boolean result = false;
 
         // First, check whether a some query was passed and the connection with

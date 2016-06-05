@@ -6,6 +6,8 @@
 package main;
 
 import datastorage.DatabaseConnection;
+import datastorage.DishDAO;
+import datastorage.OrderDAO;
 import presentation.SysteemUI;
 
 /**
@@ -18,9 +20,9 @@ public class ProftaakVP4 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        DatabaseConnection dbConnection = new DatabaseConnection();
-        dbConnection.openConnection();
         SysteemUI ui = new SysteemUI();
+        OrderDAO test = new OrderDAO();
+        System.out.println(test.getAutoIncrementValue());
     }
     
 }

@@ -61,6 +61,8 @@ public class SysteemUI extends JFrame {
         panelList = new ArrayList<>();
 
         dishManager = new DishManager();
+        dishManager.findMenuItems();
+        
         orderManager = new OrderManager();
 
         //Navigation bar with buttons
@@ -235,7 +237,8 @@ public class SysteemUI extends JFrame {
                 if (!orderManager.getPendingOrder().getKitchenOrders().isEmpty()) {
                     JButton confirmButton = new JButton("Bevestig");
                     confirmButton.addActionListener((ActionEvent e) -> {
-                        orderManager.getPendingOrder().setOrderStatus("placed");
+                        //Change the order status to placed
+                        orderManager.confirmOrder();
 
                         //Refresh the OrderOverviewPanel
                         refreshOverviewPanel();
@@ -411,6 +414,7 @@ public class SysteemUI extends JFrame {
             //If a pending order does not exists, create one.
             if (!orderManager.pendingOrderExist()) {
                 RestaurantOrder pendingOrder = new RestaurantOrder(1);
+                pendingOrder.setOrderNr(orderManager.getAutoIncrementValue());
                 orderManager.addOrder(pendingOrder);
             }
 

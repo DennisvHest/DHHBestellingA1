@@ -53,6 +53,10 @@ public class RestaurantOrder {
     }
     
     //Setters
+    public void setOrderNr(int orderNr) {
+        this.orderNr = orderNr;
+    }
+    
     public void setOrderStatus(String status) {
         orderStatus = status;
     }
