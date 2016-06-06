@@ -95,13 +95,17 @@ public class OrderManager {
         return (ArrayList<RestaurantOrder>) placedOrders;
     }
     
-    public void confirmOrder() {
-        orderDAO.insertOrder(getPendingOrder());
+    public void insertRestaurantOrder() {
+        RestaurantOrder pendingOrder = getPendingOrder();
         
-        getPendingOrder().setOrderStatus("placed");
+        orderDAO.insertOrder(pendingOrder);
+    }
+    
+    public void insertItemOrder() {
+        orderDAO.insertItemOrders(getPendingOrder());
     }
     
     public int getAutoIncrementValue() {
-        return orderDAO.getAutoIncrementValue();
+        return orderDAO.getAutoIncrementValue("restaurantorder");
     }
 }

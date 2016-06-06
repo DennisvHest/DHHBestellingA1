@@ -237,8 +237,11 @@ public class SysteemUI extends JFrame {
                 if (!orderManager.getPendingOrder().getKitchenOrders().isEmpty()) {
                     JButton confirmButton = new JButton("Bevestig");
                     confirmButton.addActionListener((ActionEvent e) -> {
+                        //Insert kitchen- and drinkOrders into database
+                        orderManager.insertItemOrder();
+                        
                         //Change the order status to placed
-                        orderManager.confirmOrder();
+                        orderManager.getPendingOrder().setOrderStatus("placed");
 
                         //Refresh the OrderOverviewPanel
                         refreshOverviewPanel();
@@ -416,6 +419,7 @@ public class SysteemUI extends JFrame {
                 RestaurantOrder pendingOrder = new RestaurantOrder(1);
                 pendingOrder.setOrderNr(orderManager.getAutoIncrementValue());
                 orderManager.addOrder(pendingOrder);
+                orderManager.insertRestaurantOrder();
             }
 
             //If a KitchenOrder with this dish already exists it should not be created again

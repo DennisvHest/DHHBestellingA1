@@ -6,12 +6,14 @@ package domain;
  */
 public class Dish {
 
+    private int id;
     private String nameDish;
     private String sortDish;
     private String descriptionDish;
     private double priceDish;
 
-    public Dish(String nameDish, String sortDish, String descriptionDish, double priceDish) {
+    public Dish(int id, String nameDish, String sortDish, String descriptionDish, double priceDish) {
+        this.id = id;
         this.nameDish = nameDish;
         this.sortDish = sortDish;
         this.descriptionDish = descriptionDish;
@@ -19,6 +21,10 @@ public class Dish {
     }
 
     //Getters
+    public int getId() {
+        return id;
+    }
+    
     public String getNameDish() {
         return nameDish;
     }

@@ -33,14 +33,17 @@ public class DishDAO {
                 {
                     // The membershipnumber for a member is unique, so in case the
                     // resultset does contain data, we need its first entry.
-                    if(resultset.next())
+                    while(resultset.next())
                     {
+                        int id = resultset.getInt("id");
                         String nameDish = resultset.getString("dishName");
                         String sortDish = resultset.getString("categoryName");
                         String descriptionDish = resultset.getString("description");
                         double priceDish = resultset.getDouble("price");
                         
-                        dbDishes.add(new Dish(nameDish, sortDish, descriptionDish, priceDish));
+                        Dish dbDish = new Dish(id, nameDish, sortDish, descriptionDish, priceDish);
+                        
+                        dbDishes.add(dbDish);
                     }
                 }
                 catch(SQLException e)

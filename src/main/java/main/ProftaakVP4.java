@@ -21,8 +21,6 @@ public class ProftaakVP4 {
      */
     public static void main(String[] args) {
         SysteemUI ui = new SysteemUI();
-        OrderDAO test = new OrderDAO();
-        System.out.println(test.getAutoIncrementValue());
     }
     
 }
