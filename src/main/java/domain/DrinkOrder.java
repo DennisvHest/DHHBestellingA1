@@ -4,7 +4,7 @@ package domain;
  *
  * @author Dennis
  */
-class DrinkOrder {
+public class DrinkOrder {
     
     public DrinkOrder() {
         

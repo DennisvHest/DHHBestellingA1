@@ -28,9 +28,7 @@ import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import manager.OrderManager;
 
 /**
@@ -95,6 +93,7 @@ public class SysteemUI extends JFrame {
 
         frame.pack();
         frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+        frame.setUndecorated(true);
     }
 
     class NavBarPanel extends JPanel {
@@ -330,18 +329,24 @@ public class SysteemUI extends JFrame {
 
     class ReceiptPanel extends JPanel {
 
-        private JPanel orderReceiptsPanel;
+        private JPanel orderReceiptsPanel, orderTotalPanel;
 
         public ReceiptPanel() {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             add(new JLabel("Rekening"));
 
             orderReceiptsPanel = new JPanel();
+            orderReceiptsPanel.setMaximumSize(new Dimension(600, 9999));
             add(orderReceiptsPanel);
+            
+            orderTotalPanel = new JPanel();
+            orderTotalPanel.setMaximumSize(new Dimension(200,200));
+            add(orderTotalPanel);
         }
 
         public void refreshOrderReceiptPanel() {
             orderReceiptsPanel.removeAll();
+            orderTotalPanel.removeAll();
 
             //For every unpaid order, create a panel with order information
             for (RestaurantOrder order : orderManager.getOrders()) {
@@ -349,6 +354,15 @@ public class SysteemUI extends JFrame {
                     orderReceiptsPanel.add(createOrderReceiptPanel(order));
                 }
             }
+            
+            double total = orderManager.getUnpaidTotal();
+            orderTotalPanel.add(new JLabel("Totaal: € " + String.format("%.2f", total)));
+            
+            JButton payButton = new JButton("Betalen");
+            payButton.addActionListener((ActionEvent e) -> {
+                orderManager.payUnpaidOrders();
+            });
+            orderTotalPanel.add(payButton);
         }
 
         public JPanel createOrderReceiptPanel(RestaurantOrder order) {

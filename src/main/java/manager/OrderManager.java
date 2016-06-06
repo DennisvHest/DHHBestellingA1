@@ -1,6 +1,7 @@
 package manager;
 
 import datastorage.OrderDAO;
+import domain.DrinkOrder;
 import domain.KitchenOrder;
 import domain.RestaurantOrder;
 import java.util.ArrayList;
@@ -103,6 +104,36 @@ public class OrderManager {
     
     public void insertItemOrder() {
         orderDAO.insertItemOrders(getPendingOrder());
+    }
+    
+    public double getUnpaidTotal() {
+        //Calculate the total price of every unpaid order
+        double total = 0.00;
+        
+        for (RestaurantOrder order : orders) {
+            if (!"payed".equals(order.getOrderStatus()) || !"waitingForPayment".equals(order.getOrderStatus())) {
+                
+                //Go through all the KitchenOrders
+                for (KitchenOrder kitchenOrder : order.getKitchenOrders()) {
+                    total += kitchenOrder.getDish().getpriceDish() * kitchenOrder.getDishAmount();
+                }
+                
+                //Go through all the DrinkOrders
+                for (DrinkOrder drinkOrder : order.getDrinkOrders()) {
+                    //total += drinkOrder.getDish().getPriceDrink() * drinkOrder.getDrinkAmount();
+                }
+            }
+        }
+        
+        return total;
+    }
+    
+    public void payUnpaidOrders() {
+        for (RestaurantOrder order : orders) {
+            if (!"payed".equals(order.getOrderStatus()) || !"waitingForPayment".equals(order.getOrderStatus())) {
+                orderDAO.updateOrderStatus(order.getOrderNr(), 5);
+            }
+        }
     }
     
     public int getAutoIncrementValue() {

@@ -80,4 +80,17 @@ public class OrderDAO {
         }
         return value;
     }
+    
+    public boolean updateOrderStatus(int orderNr, int status) {
+        boolean result = false;
+        
+        // First open the database connection.
+        DatabaseConnection connection = new DatabaseConnection();
+        if (connection.openConnection()) {
+            result = connection.executeSQLIUDStatement(
+                    "UPDATE restaurantorder SET statusId = " + status + " WHERE id = " + orderNr + ";");
+        }
+        
+        return result;
+    }
 }

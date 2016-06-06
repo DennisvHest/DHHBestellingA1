@@ -12,7 +12,6 @@ public class RestaurantOrder {
 
     private int orderNr;
     private Date orderDate;
-    private boolean payed;
     private String orderStatus;
     private int tableNr;
     private List<KitchenOrder> kitchenOrders;
@@ -21,7 +20,6 @@ public class RestaurantOrder {
     public RestaurantOrder(int tableNr) {
         this.tableNr = tableNr;
 
-        payed = false;
         orderStatus = "pending";
         
         kitchenOrders = new ArrayList<>();
@@ -37,10 +35,6 @@ public class RestaurantOrder {
         return orderDate;
     }
 
-    public boolean getPayed() {
-        return payed;
-    }
-
     public String getOrderStatus() {
         return orderStatus;
     }
@@ -51,6 +45,10 @@ public class RestaurantOrder {
 
     public ArrayList<KitchenOrder> getKitchenOrders() {
         return (ArrayList<KitchenOrder>) kitchenOrders;
+    }
+    
+    public ArrayList<DrinkOrder> getDrinkOrders() {
+        return (ArrayList<DrinkOrder>) drinkOrders;
     }
     
     //Setters

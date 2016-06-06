@@ -1,5 +1,8 @@
 package domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author Mathijs, Dennis
@@ -11,6 +14,7 @@ public class Dish {
     private String sortDish;
     private String descriptionDish;
     private double priceDish;
+    private List<Ingredient> ingredients;
 
     public Dish(int id, String nameDish, String sortDish, String descriptionDish, double priceDish) {
         this.id = id;
@@ -18,6 +22,8 @@ public class Dish {
         this.sortDish = sortDish;
         this.descriptionDish = descriptionDish;
         this.priceDish = priceDish;
+        
+        ingredients = new ArrayList<>();
     }
 
     //Getters
@@ -39,5 +45,9 @@ public class Dish {
 
     public double getpriceDish() {
         return priceDish;
+    }
+    
+    public void addIngredient(Ingredient ingredient) {
+        ingredients.add(ingredient);
     }
 }
