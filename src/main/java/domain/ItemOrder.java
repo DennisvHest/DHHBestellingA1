@@ -9,7 +9,7 @@ package domain;
  *
  * @author Dennis
  */
-public class ItemOrder {
+public abstract class ItemOrder {
     protected int itemOrderId;
     protected int amount;
     protected String status;
@@ -22,6 +22,8 @@ public class ItemOrder {
     public int getAmount() {
         return amount;
     }
+    
+    abstract public Item getItem();
     
     public void setAmount(int amount) {
         this.amount = amount;

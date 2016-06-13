@@ -14,7 +14,9 @@ public class KitchenOrder extends ItemOrder{
         this.dish = dish;
     }
 
-    public Dish getDish() {
+    //Getters
+    @Override
+    public Item getItem() {
         return dish;
     }
 }

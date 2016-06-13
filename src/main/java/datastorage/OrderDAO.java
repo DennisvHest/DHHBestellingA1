@@ -1,5 +1,6 @@
 package datastorage;
 
+import domain.BarOrder;
 import domain.KitchenOrder;
 import domain.RestaurantOrder;
 import java.sql.ResultSet;
@@ -35,25 +36,48 @@ public class OrderDAO {
     public void insertItemOrders(RestaurantOrder order) {
 
         // First open the database connection.
-        DatabaseConnection connection = new DatabaseConnection();
-        if (connection.openConnection()) {
+        DatabaseConnection dishConnection = new DatabaseConnection();
+        if (dishConnection.openConnection()) {
             
             //If there are any kitchenorders, add them to the database
             if (!order.getKitchenOrders().isEmpty()) {
                 int kitchenOrderAI = getAutoIncrementValue("kitchenorder");
                 //Insert the kitchenOrder
-                connection.executeSQLIUDStatement(
+                dishConnection.executeSQLIUDStatement(
                         "INSERT INTO kitchenorder VALUES (" + kitchenOrderAI + ",NOW(), 1, " + order.getOrderNr() + ");");
                 
                 //For every kitchenOrder add the dishes to the database
                 for (KitchenOrder kitchenOrder : order.getKitchenOrders()) {
-                    connection.executeSQLIUDStatement(
-                        "INSERT INTO kitchenorder_dish VALUES (" + kitchenOrder.getDish().getId() + ", " + kitchenOrderAI + ", " + kitchenOrder.getAmount() + ");");
+                    dishConnection.executeSQLIUDStatement(
+                        "INSERT INTO kitchenorder_dish VALUES (" + kitchenOrder.getItem().getId() + ", " + kitchenOrderAI + ", " + kitchenOrder.getAmount() + ");");
                 }
             }
 
             // Finished with the connection, so close it.
-            connection.closeConnection();
+            dishConnection.closeConnection();
+        }
+        // else an error occurred 
+        
+        // First open the database connection.
+        DatabaseConnection drinkConnection = new DatabaseConnection();
+        if (drinkConnection.openConnection()) {
+            
+            //If there are any barOrders, add them to the database
+            if (!order.getBarOrders().isEmpty()) {
+                int barOrderAI = getAutoIncrementValue("barorder");
+                //Insert the barOrder
+                drinkConnection.executeSQLIUDStatement(
+                        "INSERT INTO barorder VALUES (" + barOrderAI + ",NOW(), 1, " + order.getOrderNr() + ");");
+                
+                //For every barOrder add the drinks to the database
+                for (BarOrder barOrder : order.getBarOrders()) {
+                    drinkConnection.executeSQLIUDStatement(
+                        "INSERT INTO barorder_drink VALUES (" + barOrderAI + ", " + barOrder.getItem().getId() + ", " + barOrder.getAmount() + ");");
+                }
+            }
+
+            // Finished with the connection, so close it.
+            drinkConnection.closeConnection();
         }
         // else an error occurred 
     }

@@ -1,8 +1,10 @@
 package presentation;
 
+import domain.BarOrder;
 import domain.Dish;
 import domain.Drink;
 import domain.Item;
+import domain.ItemOrder;
 import domain.KitchenOrder;
 import domain.RestaurantOrder;
 import manager.ItemManager;
@@ -159,7 +161,7 @@ public class SysteemUI extends JFrame {
         public AppetizerPanel() {
             //Display every appetizer
             for (Dish dish : itemManager.getDishListBySort("Appetizer")) {
-                add(createDishPanel(dish));
+                add(createItemPanel(dish));
             }
         }
     }
@@ -169,7 +171,7 @@ public class SysteemUI extends JFrame {
         public MainCoursePanel() {
             //Display every main course
             for (Dish dish : itemManager.getDishListBySort("MainCourse")) {
-                add(createDishPanel(dish));
+                add(createItemPanel(dish));
             }
         }
     }
@@ -179,7 +181,7 @@ public class SysteemUI extends JFrame {
         public DessertPanel() {
             //Display every dessert
             for (Dish dish : itemManager.getDishListBySort("Dessert")) {
-                add(createDishPanel(dish));
+                add(createItemPanel(dish));
             }
         }
     }
@@ -189,7 +191,7 @@ public class SysteemUI extends JFrame {
         public DrinkPanel() {
             //Display every drink
             for (Drink drink : itemManager.getDrinkList()) {
-                add(createDishPanel(drink));
+                add(createItemPanel(drink));
             }
         }
     }
@@ -236,7 +238,11 @@ public class SysteemUI extends JFrame {
                     ordersPanel.add(createOrderPanel(kitchenOrder, "pending"));
                 }
 
-                if (!orderManager.getPendingOrder().getKitchenOrders().isEmpty()) {
+                for (BarOrder barOrder : orderManager.getPendingOrder().getBarOrders()) {
+                    ordersPanel.add(createOrderPanel(barOrder, "pending"));
+                }
+
+                if (!orderManager.getPendingOrder().getItemOrders().isEmpty()) {
                     JButton confirmButton = new JButton("Bevestig");
                     confirmButton.addActionListener((ActionEvent e) -> {
                         //Insert kitchen- and drinkOrders into database
@@ -271,31 +277,42 @@ public class SysteemUI extends JFrame {
                     orderHeaderPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
                     orderHeaderPanel.add(new JLabel("Geplaatste bestelling #" + Integer.toString(order.getOrderNr())));
                     ordersPanel.add(orderHeaderPanel);
+
                     for (KitchenOrder kitchenOrder : order.getKitchenOrders()) {
                         ordersPanel.add(createOrderPanel(kitchenOrder, "placed"));
+                    }
+
+                    for (BarOrder barOrder : order.getBarOrders()) {
+                        ordersPanel.add(createOrderPanel(barOrder, "placed"));
                     }
                 }
             }
         }
 
-        public JPanel createOrderPanel(KitchenOrder kitchenOrder, String orderType) {
+        public JPanel createOrderPanel(ItemOrder itemOrder, String orderType) {
             JPanel orderPanel = new JPanel();
             orderPanel.setLayout(new BoxLayout(orderPanel, BoxLayout.X_AXIS));
             orderPanel.setPreferredSize(new Dimension(1000, 100));
 
-            Dish dishInOrder = kitchenOrder.getDish();
+            Item itemInOrder = itemOrder.getItem();
 
             orderPanel.add(Box.createGlue());
-            orderPanel.add(new JLabel(dishInOrder.getName()));
+            orderPanel.add(new JLabel(itemInOrder.getName()));
             orderPanel.add(Box.createGlue());
-            orderPanel.add(new JLabel(dishInOrder.getSortDish()));
+
+            if (itemInOrder instanceof Dish) {
+                orderPanel.add(new JLabel(((Dish) itemInOrder).getSortDish()));
+            } else {
+                orderPanel.add(Box.createGlue());
+            }
+
             orderPanel.add(Box.createGlue());
             orderPanel.add(new JLabel("Aantal"));
 
-            JSpinner amountSpinner = new JSpinner(new SpinnerNumberModel(kitchenOrder.getAmount(), 1, 100, 1));
+            JSpinner amountSpinner = new JSpinner(new SpinnerNumberModel(itemOrder.getAmount(), 1, 100, 1));
             amountSpinner.setMaximumSize(new Dimension(50, 50));
             amountSpinner.addChangeListener((ChangeEvent e) -> {
-                kitchenOrder.setAmount((int) amountSpinner.getValue());
+                itemOrder.setAmount((int) amountSpinner.getValue());
             });
             orderPanel.add(amountSpinner);
 
@@ -304,7 +321,7 @@ public class SysteemUI extends JFrame {
             JButton deleteOrderButton = new JButton("X");
             deleteOrderButton.setMinimumSize(new Dimension(100, 100));
             deleteOrderButton.addActionListener((ActionEvent e) -> {
-                orderManager.getPendingOrder().removeKitchenOrder(kitchenOrder);
+                orderManager.getPendingOrder().removeItemOrder(itemOrder);
 
                 //Refresh the order overview
                 orderOverviewPanel.refreshOverviewPanel();
@@ -318,7 +335,7 @@ public class SysteemUI extends JFrame {
 
             orderPanel.setAlignmentX(CENTER_ALIGNMENT);
 
-            if (orderType == "pending") {
+            if ("pending".equals(orderType)) {
                 orderPanel.setBackground(Color.white);
             } else {
                 orderPanel.setBackground(Color.gray);
@@ -375,16 +392,16 @@ public class SysteemUI extends JFrame {
             orderReceiptPanel.add(new JLabel("Niet Betaalde bestelling #" + Integer.toString(order.getOrderNr())));
 
             JPanel orderTable = new JPanel();
-            orderTable.setLayout(new GridLayout(order.getKitchenOrders().size() + 1, 4, 10, 10));
+            orderTable.setLayout(new GridLayout(order.getItemOrders().size() + 1, 4, 10, 10));
             orderTable.add(new JLabel("Naam gerecht"));
             orderTable.add(new JLabel("Prijs per gerecht"));
             orderTable.add(new JLabel("Aantal"));
             orderTable.add(new JLabel("Totaalprijs gerecht"));
 
-            for (KitchenOrder kitchenOrder : order.getKitchenOrders()) {
-                String name = kitchenOrder.getDish().getName();
-                int amount = kitchenOrder.getAmount();
-                double pricePerDish = kitchenOrder.getDish().getPrice();
+            for (ItemOrder itemOrder : order.getItemOrders()) {
+                String name = itemOrder.getItem().getName();
+                int amount = itemOrder.getAmount();
+                double pricePerDish = itemOrder.getItem().getPrice();
                 double totalPriceDish = pricePerDish * amount;
 
                 orderTable.add(new JLabel(name));
@@ -404,7 +421,7 @@ public class SysteemUI extends JFrame {
         cl.show(centerMenu, panel);
     }
 
-    public JPanel createDishPanel(Item item) {
+    public JPanel createItemPanel(Item item) {
         JPanel dishPanel = new JPanel();
         List<JLabel> labels = new ArrayList<>();
 
@@ -441,7 +458,7 @@ public class SysteemUI extends JFrame {
             moreInfoButton.addActionListener((ActionEvent e) -> {
                 moreInfoDialog.setVisible(true);
             });
-            
+
             orderPanel.add(moreInfoButton);
         }
 
@@ -450,7 +467,7 @@ public class SysteemUI extends JFrame {
             //If a pending order does not exists, create one.
             if (!orderManager.pendingOrderExist()) {
                 RestaurantOrder pendingOrder = new RestaurantOrder(1);
-                pendingOrder.setOrderNr(orderManager.getAutoIncrementValue());
+                pendingOrder.setOrderNr(orderManager.getAutoIncrementValue("restaurantorder"));
                 orderManager.addOrder(pendingOrder);
                 orderManager.insertRestaurantOrder();
             }
@@ -460,14 +477,14 @@ public class SysteemUI extends JFrame {
                 boolean createOrder = true;
 
                 for (KitchenOrder kitchenOrder : orderManager.getPendingOrder().getKitchenOrders()) {
-                    if (kitchenOrder.getDish() == item) {
+                    if (kitchenOrder.getItem() == item) {
                         createOrder = false;
                     }
                 }
 
                 if (createOrder == true) {
                     //Add a new KitchenOrder to the pending order
-                    orderManager.getPendingOrder().addKitchenOrder(new KitchenOrder(1, (Dish) item, 1));
+                    orderManager.getPendingOrder().addKitchenOrder(new KitchenOrder(orderManager.getAutoIncrementValue("kitchenorder"), (Dish) item, 1));
                 }
             }
 
@@ -475,15 +492,15 @@ public class SysteemUI extends JFrame {
                 //If a BarOrder with this drink already exists it should not be created again
                 boolean createOrder = true;
 
-                for (KitchenOrder kitchenOrder : orderManager.getPendingOrder().getKitchenOrders()) {
-                    if (kitchenOrder.getDish() == item) {
+                for (BarOrder barOrder : orderManager.getPendingOrder().getBarOrders()) {
+                    if (barOrder.getItem() == item) {
                         createOrder = false;
                     }
                 }
 
                 if (createOrder == true) {
                     //Add a new BarOrder to the pending order
-                    orderManager.getPendingOrder().addKitchenOrder(new KitchenOrder(1, (Dish) item, 1));
+                    orderManager.getPendingOrder().addBarOrder(new BarOrder(orderManager.getAutoIncrementValue("barorder"), (Drink) item, 1));
                 }
             }
 

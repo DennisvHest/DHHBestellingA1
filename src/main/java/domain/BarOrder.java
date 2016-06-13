@@ -11,4 +11,10 @@ public class BarOrder extends ItemOrder{
         super(itemId, amount);
         this.drink = drink;
     }
+    
+    //Getters
+    @Override
+    public Item getItem() {
+        return drink;
+    }
 }

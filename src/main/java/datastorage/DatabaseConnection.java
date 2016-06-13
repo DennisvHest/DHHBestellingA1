@@ -35,7 +35,6 @@ public class DatabaseConnection {
                 }
 
                 result = true;
-                System.out.println("Verbinding met de database is gelukt!");
             } catch (SQLException e) {
                 System.out.println(e);
                 result = false;

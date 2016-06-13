@@ -2,6 +2,7 @@ package manager;
 
 import datastorage.OrderDAO;
 import domain.BarOrder;
+import domain.ItemOrder;
 import domain.KitchenOrder;
 import domain.RestaurantOrder;
 import java.util.ArrayList;
@@ -60,8 +61,17 @@ public class OrderManager {
 
         for (RestaurantOrder order : orders) {
             if ("pending".equals(order.getOrderStatus())) {
-                for (KitchenOrder dishOrder : order.getKitchenOrders()) {
-                    buffer.append(dishOrder.getDish().getName());
+                for (KitchenOrder kitchenOrder : order.getKitchenOrders()) {
+                    buffer.append(kitchenOrder.getItem().getName());
+                    buffer.append("   ");
+                    buffer.append(kitchenOrder.getAmount());
+                    buffer.append("\n");
+                }
+                
+                for (BarOrder barOrder : order.getBarOrders()) {
+                    buffer.append(barOrder.getItem().getName());
+                    buffer.append("   ");
+                    buffer.append(barOrder.getAmount());
                     buffer.append("\n");
                 }
             }
@@ -115,12 +125,12 @@ public class OrderManager {
                 
                 //Go through all the KitchenOrders
                 for (KitchenOrder kitchenOrder : order.getKitchenOrders()) {
-                    total += kitchenOrder.getDish().getPrice() * kitchenOrder.getAmount();
+                    total += kitchenOrder.getItem().getPrice() * kitchenOrder.getAmount();
                 }
                 
                 //Go through all the DrinkOrders
                 for (BarOrder drinkOrder : order.getBarOrders()) {
-                    //total += drinkOrder.getDish().getPriceDrink() * drinkOrder.getDrinkAmount();
+                    total += drinkOrder.getItem().getPrice() * drinkOrder.getAmount();
                 }
             }
         }
@@ -136,7 +146,7 @@ public class OrderManager {
         }
     }
     
-    public int getAutoIncrementValue() {
-        return orderDAO.getAutoIncrementValue("restaurantorder");
+    public int getAutoIncrementValue(String table) {
+        return orderDAO.getAutoIncrementValue(table);
     }
 }

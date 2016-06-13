@@ -1,6 +1,7 @@
 package datastorage;
 
 import domain.Dish;
+import domain.Drink;
 import domain.Ingredient;
 import domain.Item;
 import java.sql.ResultSet;
@@ -22,10 +23,10 @@ public class ItemDAO {
         ArrayList<Item> dbItems = new ArrayList<>();
 
         // First open a database connnection
-        DatabaseConnection connection = new DatabaseConnection();
-        if (connection.openConnection()) {
+        DatabaseConnection dishConnection = new DatabaseConnection();
+        if (dishConnection.openConnection()) {
             // If a connection was successfully setup, execute the SELECT statement.
-            ResultSet resultset = connection.executeSQLSelectStatement(
+            ResultSet resultset = dishConnection.executeSQLSelectStatement(
                     "SELECT * FROM dish JOIN category_dish on dish.id = category_dish.dishId JOIN category on category_dish.categoryId = category.id;");
             
             if (resultset != null) {
@@ -60,7 +61,41 @@ public class ItemDAO {
 
             // We had a database connection opened. Since we're finished,
             // we need to close it.
-            connection.closeConnection();
+            dishConnection.closeConnection();
+        }
+        
+        // First open a database connnection
+        DatabaseConnection drinkConnection = new DatabaseConnection();
+        if (drinkConnection.openConnection()) {
+            // If a connection was successfully setup, execute the SELECT statement.
+            ResultSet resultset = drinkConnection.executeSQLSelectStatement(
+                    "SELECT * FROM drink;");
+            
+            if (resultset != null) {
+                try {
+                    // The membershipnumber for a member is unique, so in case the
+                    // resultset does contain data, we need its first entry.
+                    while (resultset.next()) {
+
+//                        ResultSet resultsetIngredient = connection.executeSQLSelectStatement(
+//                                "SELECT ingredientName FROM dish JOIN dish_ingredient ON dish.id = dish_ingredient.dishId JOIN ingredient ON dish_ingredient.ingredientId = ingredient.id WHERE dish.id = " + resultset.getInt("id") + ";");
+                        int id = resultset.getInt("id");
+                        String nameDrink = resultset.getString("drinkName");
+                        double priceDrink = resultset.getDouble("price");
+                        
+                        Item dbDrink = new Drink(id, nameDrink, priceDrink);
+
+                        dbItems.add(dbDrink);
+                    }
+                } catch (SQLException e) {
+                    System.out.println(e);
+                }
+            }
+            // else an error occurred leave 'member' to null.
+
+            // We had a database connection opened. Since we're finished,
+            // we need to close it.
+            drinkConnection.closeConnection();
         }
         
         return dbItems;

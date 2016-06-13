@@ -51,6 +51,14 @@ public class RestaurantOrder {
         return (ArrayList<BarOrder>) barOrders;
     }
     
+    public ArrayList<ItemOrder> getItemOrders() {
+        List<ItemOrder> itemOrders = new ArrayList<>();
+        itemOrders.addAll(kitchenOrders);
+        itemOrders.addAll(barOrders);
+        
+        return (ArrayList<ItemOrder>) itemOrders;
+    }
+    
     //Setters
     public void setOrderNr(int orderNr) {
         this.orderNr = orderNr;
@@ -64,7 +72,17 @@ public class RestaurantOrder {
         kitchenOrders.add(order);
     }
     
-    public void removeKitchenOrder(KitchenOrder order) {
-        kitchenOrders.remove(order);
+    public void addBarOrder(BarOrder order) {
+        barOrders.add(order);
+    }
+    
+    public void removeItemOrder(ItemOrder order) {
+        if (order instanceof KitchenOrder) {
+            kitchenOrders.remove((KitchenOrder)order);
+        }
+        
+        if (order instanceof BarOrder) {
+            barOrders.remove((BarOrder) order);
+        }
     }
 }
