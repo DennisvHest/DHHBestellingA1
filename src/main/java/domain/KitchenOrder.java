@@ -1,30 +1,19 @@
 package domain;
 
-public class KitchenOrder {
+public class KitchenOrder extends ItemOrder{
 
-    private int kitchenOrderId;
     private Dish dish;
-    private int dishAmount;
-    private String statusDish;
     private double totalPriceDish;
 
-    public KitchenOrder(int dishOrderNr, Dish dish, int dishAmount) {
-        this.kitchenOrderId = dishOrderNr;
+    public KitchenOrder(int itemId, int amount) {
+        super(itemId, amount);
+    }
+    
+    public KitchenOrder(int itemId, Dish dish, int amount) {
+        super(itemId, amount);
         this.dish = dish;
-        this.dishAmount = dishAmount;
-        
-        statusDish = "pending";
-        totalPriceDish = dish.getpriceDish() * dishAmount;
     }
-    
-    public int getDishAmount() {
-        return dishAmount;
-    }
-    
-    public void setDishAmount(int dishAmount) {
-        this.dishAmount = dishAmount;
-    }
-    
+
     public Dish getDish() {
         return dish;
     }

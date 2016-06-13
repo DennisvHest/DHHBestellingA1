@@ -6,7 +6,7 @@
 package main;
 
 import datastorage.DatabaseConnection;
-import datastorage.DishDAO;
+import datastorage.ItemDAO;
 import datastorage.OrderDAO;
 import presentation.SysteemUI;
 

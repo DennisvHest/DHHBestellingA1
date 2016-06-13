@@ -1,9 +1,11 @@
 package presentation;
 
 import domain.Dish;
+import domain.Drink;
+import domain.Item;
 import domain.KitchenOrder;
 import domain.RestaurantOrder;
-import manager.DishManager;
+import manager.ItemManager;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -20,8 +22,10 @@ import javax.swing.JTabbedPane;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.List;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
@@ -45,7 +49,7 @@ public class SysteemUI extends JFrame {
     private OrderSummaryPanel orderSummaryPanel;
     private OrderOverviewPanel orderOverviewPanel;
     private ReceiptPanel receiptPanel;
-    private DishManager dishManager;
+    private ItemManager itemManager;
     private OrderManager orderManager;
 
     public SysteemUI() {
@@ -58,9 +62,9 @@ public class SysteemUI extends JFrame {
 
         panelList = new ArrayList<>();
 
-        dishManager = new DishManager();
-        dishManager.findMenuItems();
-        
+        itemManager = new ItemManager();
+        itemManager.findMenuItems();
+
         orderManager = new OrderManager();
 
         //Navigation bar with buttons
@@ -93,7 +97,6 @@ public class SysteemUI extends JFrame {
 
         frame.pack();
         frame.setExtendedState(Frame.MAXIMIZED_BOTH);
-        frame.setUndecorated(true);
     }
 
     class NavBarPanel extends JPanel {
@@ -155,7 +158,7 @@ public class SysteemUI extends JFrame {
 
         public AppetizerPanel() {
             //Display every appetizer
-            for (Dish dish : dishManager.getDishListBySort("Appetizer")) {
+            for (Dish dish : itemManager.getDishListBySort("Appetizer")) {
                 add(createDishPanel(dish));
             }
         }
@@ -165,7 +168,7 @@ public class SysteemUI extends JFrame {
 
         public MainCoursePanel() {
             //Display every main course
-            for (Dish dish : dishManager.getDishListBySort("MainCourse")) {
+            for (Dish dish : itemManager.getDishListBySort("MainCourse")) {
                 add(createDishPanel(dish));
             }
         }
@@ -175,7 +178,7 @@ public class SysteemUI extends JFrame {
 
         public DessertPanel() {
             //Display every dessert
-            for (Dish dish : dishManager.getDishListBySort("Dessert")) {
+            for (Dish dish : itemManager.getDishListBySort("Dessert")) {
                 add(createDishPanel(dish));
             }
         }
@@ -185,8 +188,8 @@ public class SysteemUI extends JFrame {
 
         public DrinkPanel() {
             //Display every drink
-            for (Dish dish : dishManager.getDishListBySort("Drink")) {
-                add(createDishPanel(dish));
+            for (Drink drink : itemManager.getDrinkList()) {
+                add(createDishPanel(drink));
             }
         }
     }
@@ -238,7 +241,7 @@ public class SysteemUI extends JFrame {
                     confirmButton.addActionListener((ActionEvent e) -> {
                         //Insert kitchen- and drinkOrders into database
                         orderManager.insertItemOrder();
-                        
+
                         //Change the order status to placed
                         orderManager.getPendingOrder().setOrderStatus("placed");
 
@@ -283,16 +286,16 @@ public class SysteemUI extends JFrame {
             Dish dishInOrder = kitchenOrder.getDish();
 
             orderPanel.add(Box.createGlue());
-            orderPanel.add(new JLabel(dishInOrder.getNameDish()));
+            orderPanel.add(new JLabel(dishInOrder.getName()));
             orderPanel.add(Box.createGlue());
             orderPanel.add(new JLabel(dishInOrder.getSortDish()));
             orderPanel.add(Box.createGlue());
             orderPanel.add(new JLabel("Aantal"));
 
-            JSpinner amountSpinner = new JSpinner(new SpinnerNumberModel(kitchenOrder.getDishAmount(), 1, 100, 1));
+            JSpinner amountSpinner = new JSpinner(new SpinnerNumberModel(kitchenOrder.getAmount(), 1, 100, 1));
             amountSpinner.setMaximumSize(new Dimension(50, 50));
             amountSpinner.addChangeListener((ChangeEvent e) -> {
-                kitchenOrder.setDishAmount((int) amountSpinner.getValue());
+                kitchenOrder.setAmount((int) amountSpinner.getValue());
             });
             orderPanel.add(amountSpinner);
 
@@ -338,9 +341,9 @@ public class SysteemUI extends JFrame {
             orderReceiptsPanel = new JPanel();
             orderReceiptsPanel.setMaximumSize(new Dimension(600, 9999));
             add(orderReceiptsPanel);
-            
+
             orderTotalPanel = new JPanel();
-            orderTotalPanel.setMaximumSize(new Dimension(200,200));
+            orderTotalPanel.setMaximumSize(new Dimension(200, 200));
             add(orderTotalPanel);
         }
 
@@ -354,10 +357,10 @@ public class SysteemUI extends JFrame {
                     orderReceiptsPanel.add(createOrderReceiptPanel(order));
                 }
             }
-            
+
             double total = orderManager.getUnpaidTotal();
             orderTotalPanel.add(new JLabel("Totaal: € " + String.format("%.2f", total)));
-            
+
             JButton payButton = new JButton("Betalen");
             payButton.addActionListener((ActionEvent e) -> {
                 orderManager.payUnpaidOrders();
@@ -379,9 +382,9 @@ public class SysteemUI extends JFrame {
             orderTable.add(new JLabel("Totaalprijs gerecht"));
 
             for (KitchenOrder kitchenOrder : order.getKitchenOrders()) {
-                String name = kitchenOrder.getDish().getNameDish();
-                int amount = kitchenOrder.getDishAmount();
-                double pricePerDish = kitchenOrder.getDish().getpriceDish();
+                String name = kitchenOrder.getDish().getName();
+                int amount = kitchenOrder.getAmount();
+                double pricePerDish = kitchenOrder.getDish().getPrice();
                 double totalPriceDish = pricePerDish * amount;
 
                 orderTable.add(new JLabel(name));
@@ -401,7 +404,7 @@ public class SysteemUI extends JFrame {
         cl.show(centerMenu, panel);
     }
 
-    public JPanel createDishPanel(Dish dish) {
+    public JPanel createDishPanel(Item item) {
         JPanel dishPanel = new JPanel();
         List<JLabel> labels = new ArrayList<>();
 
@@ -414,9 +417,13 @@ public class SysteemUI extends JFrame {
         descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.Y_AXIS));
         descriptionPanel.setBackground(Color.white);
 
-        labels.add(new JLabel(dish.getNameDish()));
-        labels.add(new JLabel(dish.getDescriptionDish()));
-        labels.add(new JLabel("€ " + String.format("%.2f", dish.getpriceDish())));
+        labels.add(new JLabel(item.getName()));
+
+        if (item instanceof Dish) {
+            labels.add(new JLabel(((Dish) item).getDescriptionDish()));
+        }
+
+        labels.add(new JLabel("€ " + String.format("%.2f", item.getPrice())));
 
         for (JLabel label : labels) {
             label.setAlignmentX(CENTER_ALIGNMENT);
@@ -425,6 +432,18 @@ public class SysteemUI extends JFrame {
 
         JPanel orderPanel = new JPanel();
         orderPanel.setBackground(Color.white);
+
+        JDialog moreInfoDialog = createMoreInfoDialog();
+        moreInfoDialog.setVisible(false);
+
+        if (item instanceof Dish) {
+            JButton moreInfoButton = new JButton("Meer info");
+            moreInfoButton.addActionListener((ActionEvent e) -> {
+                moreInfoDialog.setVisible(true);
+            });
+            
+            orderPanel.add(moreInfoButton);
+        }
 
         JButton addButton = new JButton("Voeg toe");
         addButton.addActionListener((ActionEvent e) -> {
@@ -436,18 +455,36 @@ public class SysteemUI extends JFrame {
                 orderManager.insertRestaurantOrder();
             }
 
-            //If a KitchenOrder with this dish already exists it should not be created again
-            boolean createOrder = true;
+            if (item instanceof Dish) {
+                //If a KitchenOrder with this dish already exists it should not be created again
+                boolean createOrder = true;
 
-            for (KitchenOrder kitchenOrder : orderManager.getPendingOrder().getKitchenOrders()) {
-                if (kitchenOrder.getDish() == dish) {
-                    createOrder = false;
+                for (KitchenOrder kitchenOrder : orderManager.getPendingOrder().getKitchenOrders()) {
+                    if (kitchenOrder.getDish() == item) {
+                        createOrder = false;
+                    }
+                }
+
+                if (createOrder == true) {
+                    //Add a new KitchenOrder to the pending order
+                    orderManager.getPendingOrder().addKitchenOrder(new KitchenOrder(1, (Dish) item, 1));
                 }
             }
 
-            if (createOrder == true) {
-                //Add a new KitchenOrder to the pending order
-                orderManager.getPendingOrder().addKitchenOrder(new KitchenOrder(1, dish, 1));
+            if (item instanceof Drink) {
+                //If a BarOrder with this drink already exists it should not be created again
+                boolean createOrder = true;
+
+                for (KitchenOrder kitchenOrder : orderManager.getPendingOrder().getKitchenOrders()) {
+                    if (kitchenOrder.getDish() == item) {
+                        createOrder = false;
+                    }
+                }
+
+                if (createOrder == true) {
+                    //Add a new BarOrder to the pending order
+                    orderManager.getPendingOrder().addKitchenOrder(new KitchenOrder(1, (Dish) item, 1));
+                }
             }
 
             //Refresh the OrderSummary text
@@ -463,5 +500,27 @@ public class SysteemUI extends JFrame {
         dishPanel.add(orderPanel, BorderLayout.SOUTH);
 
         return dishPanel;
+    }
+
+    public JDialog createMoreInfoDialog() {
+        JDialog dialog = new JDialog();
+        dialog.setSize(300, 400);
+        dialog.getContentPane().setBackground(Color.white);
+        dialog.setUndecorated(true);
+        dialog.setLocationRelativeTo(null);
+        dialog.setAlwaysOnTop(true);
+        dialog.setLayout(new FlowLayout());
+        dialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.blue, 3));
+
+        dialog.add(new JLabel("Hallo"));
+
+        JButton closeButton = new JButton("Terug");
+        closeButton.addActionListener((ActionEvent e) -> {
+            dialog.setVisible(false);
+        });
+
+        dialog.add(closeButton);
+
+        return dialog;
     }
 }

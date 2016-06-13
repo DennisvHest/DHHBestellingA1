@@ -48,7 +48,7 @@ public class OrderDAO {
                 //For every kitchenOrder add the dishes to the database
                 for (KitchenOrder kitchenOrder : order.getKitchenOrders()) {
                     connection.executeSQLIUDStatement(
-                        "INSERT INTO kitchenorder_dish VALUES (" + kitchenOrder.getDish().getId() + ", " + kitchenOrderAI + ", " + kitchenOrder.getDishAmount() + ");");
+                        "INSERT INTO kitchenorder_dish VALUES (" + kitchenOrder.getDish().getId() + ", " + kitchenOrderAI + ", " + kitchenOrder.getAmount() + ");");
                 }
             }
 

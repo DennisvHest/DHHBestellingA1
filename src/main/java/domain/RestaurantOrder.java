@@ -15,7 +15,7 @@ public class RestaurantOrder {
     private String orderStatus;
     private int tableNr;
     private List<KitchenOrder> kitchenOrders;
-    private List<DrinkOrder> drinkOrders;
+    private List<BarOrder> barOrders;
 
     public RestaurantOrder(int tableNr) {
         this.tableNr = tableNr;
@@ -23,7 +23,7 @@ public class RestaurantOrder {
         orderStatus = "pending";
         
         kitchenOrders = new ArrayList<>();
-        drinkOrders = new ArrayList<>();
+        barOrders = new ArrayList<>();
     }
 
     //Getters
@@ -47,8 +47,8 @@ public class RestaurantOrder {
         return (ArrayList<KitchenOrder>) kitchenOrders;
     }
     
-    public ArrayList<DrinkOrder> getDrinkOrders() {
-        return (ArrayList<DrinkOrder>) drinkOrders;
+    public ArrayList<BarOrder> getBarOrders() {
+        return (ArrayList<BarOrder>) barOrders;
     }
     
     //Setters

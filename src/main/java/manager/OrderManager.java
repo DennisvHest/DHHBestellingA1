@@ -1,7 +1,7 @@
 package manager;
 
 import datastorage.OrderDAO;
-import domain.DrinkOrder;
+import domain.BarOrder;
 import domain.KitchenOrder;
 import domain.RestaurantOrder;
 import java.util.ArrayList;
@@ -61,7 +61,7 @@ public class OrderManager {
         for (RestaurantOrder order : orders) {
             if ("pending".equals(order.getOrderStatus())) {
                 for (KitchenOrder dishOrder : order.getKitchenOrders()) {
-                    buffer.append(dishOrder.getDish().getNameDish());
+                    buffer.append(dishOrder.getDish().getName());
                     buffer.append("\n");
                 }
             }
@@ -115,11 +115,11 @@ public class OrderManager {
                 
                 //Go through all the KitchenOrders
                 for (KitchenOrder kitchenOrder : order.getKitchenOrders()) {
-                    total += kitchenOrder.getDish().getpriceDish() * kitchenOrder.getDishAmount();
+                    total += kitchenOrder.getDish().getPrice() * kitchenOrder.getAmount();
                 }
                 
                 //Go through all the DrinkOrders
-                for (DrinkOrder drinkOrder : order.getDrinkOrders()) {
+                for (BarOrder drinkOrder : order.getBarOrders()) {
                     //total += drinkOrder.getDish().getPriceDrink() * drinkOrder.getDrinkAmount();
                 }
             }
