@@ -23,6 +23,8 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -53,6 +55,7 @@ public class SysteemUI extends JFrame {
     private ReceiptPanel receiptPanel;
     private ItemManager itemManager;
     private OrderManager orderManager;
+    private JDialog helpDialog;
 
     public SysteemUI() {
         frame = new JFrame();
@@ -138,8 +141,14 @@ public class SysteemUI extends JFrame {
                 receiptButton.addActionListener((ActionEvent e) -> {
                     changePanel("receiptPanel");
                 });
+                
+                helpDialog = createHelpDialog();
+                helpDialog.setVisible(false);
 
                 helpButton = new JButton("?");
+                helpButton.addActionListener((ActionEvent e) -> {
+                    helpDialog.setVisible(true);
+                });
 
                 //Array with all navbar buttons for styling and adding to the panel
                 navBarButtons = new ArrayList<>();
@@ -313,6 +322,8 @@ public class SysteemUI extends JFrame {
             amountSpinner.setMaximumSize(new Dimension(50, 50));
             amountSpinner.addChangeListener((ChangeEvent e) -> {
                 itemOrder.setAmount((int) amountSpinner.getValue());
+                //Refresh the OrderSummary text
+                orderSummaryPanel.setSumText(orderManager.printPendingOrders());
             });
             orderPanel.add(amountSpinner);
 
@@ -422,13 +433,28 @@ public class SysteemUI extends JFrame {
     }
 
     public JPanel createItemPanel(Item item) {
-        JPanel dishPanel = new JPanel();
+        JPanel itemPanel = new JPanel();
         List<JLabel> labels = new ArrayList<>();
 
-        dishPanel.setPreferredSize(new Dimension(300, 400));
+        itemPanel.setPreferredSize(new Dimension(300, 400));
 
         //Everything will be displayed vertically
-        dishPanel.setLayout(new BorderLayout());
+        itemPanel.setLayout(new BorderLayout());
+
+        BufferedImage image = item.getImage();
+
+        JPanel imagePanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(image, 30, 20, 240, 160, this);
+            }
+        };
+        
+        imagePanel.setPreferredSize(new Dimension(300, 200));
+        imagePanel.setBackground(Color.white);
+        
+        itemPanel.add(imagePanel, BorderLayout.NORTH);
 
         JPanel descriptionPanel = new JPanel();
         descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.Y_AXIS));
@@ -513,31 +539,58 @@ public class SysteemUI extends JFrame {
 
         orderPanel.add(addButton);
 
-        dishPanel.add(descriptionPanel, BorderLayout.CENTER);
-        dishPanel.add(orderPanel, BorderLayout.SOUTH);
+        itemPanel.add(descriptionPanel, BorderLayout.CENTER);
+        itemPanel.add(orderPanel, BorderLayout.SOUTH);
 
-        return dishPanel;
+        return itemPanel;
     }
 
     public JDialog createMoreInfoDialog() {
-        JDialog dialog = new JDialog();
-        dialog.setSize(300, 400);
-        dialog.getContentPane().setBackground(Color.white);
-        dialog.setUndecorated(true);
-        dialog.setLocationRelativeTo(null);
-        dialog.setAlwaysOnTop(true);
-        dialog.setLayout(new FlowLayout());
-        dialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.blue, 3));
+        JDialog moreInfoDialog = new JDialog();
+        moreInfoDialog.setSize(300, 400);
+        moreInfoDialog.getContentPane().setBackground(Color.white);
+        moreInfoDialog.setUndecorated(true);
+        moreInfoDialog.setLocationRelativeTo(null);
+        moreInfoDialog.setAlwaysOnTop(true);
+        moreInfoDialog.setLayout(new FlowLayout());
+        moreInfoDialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.blue, 3));
 
-        dialog.add(new JLabel("Hallo"));
+        moreInfoDialog.add(new JLabel("Hallo"));
 
         JButton closeButton = new JButton("Terug");
         closeButton.addActionListener((ActionEvent e) -> {
-            dialog.setVisible(false);
+            moreInfoDialog.setVisible(false);
         });
 
-        dialog.add(closeButton);
+        moreInfoDialog.add(closeButton);
 
-        return dialog;
+        return moreInfoDialog;
+    }
+    
+    public JDialog createHelpDialog() {
+        JDialog newHelpDialog = new JDialog();
+        newHelpDialog.setSize(600, 400);
+        newHelpDialog.getContentPane().setBackground(Color.white);
+        newHelpDialog.setUndecorated(true);
+        newHelpDialog.setLocationRelativeTo(null);
+        newHelpDialog.setAlwaysOnTop(true);
+        newHelpDialog.setLayout(new BoxLayout(newHelpDialog.getContentPane(), BoxLayout.Y_AXIS));
+        newHelpDialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.blue, 3));
+
+        newHelpDialog.add(new JLabel("     Informatie"));
+        
+        JPanel helpContentPanel = new JPanel();
+        helpContentPanel.setLayout(new GridLayout(2, 2));
+        
+        newHelpDialog.add(helpContentPanel);
+        
+        JButton closeButton = new JButton("Terug");
+        closeButton.addActionListener((ActionEvent e) -> {
+            newHelpDialog.setVisible(false);
+        });
+
+        newHelpDialog.add(closeButton);
+        
+        return newHelpDialog;
     }
 }

@@ -5,9 +5,6 @@
  */
 package main;
 
-import datastorage.DatabaseConnection;
-import datastorage.ItemDAO;
-import datastorage.OrderDAO;
 import presentation.SysteemUI;
 
 /**

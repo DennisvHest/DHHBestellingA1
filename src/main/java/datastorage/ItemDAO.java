@@ -4,18 +4,25 @@ import domain.Dish;
 import domain.Drink;
 import domain.Ingredient;
 import domain.Item;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 
 /**
  *
  * @author Dennis
  */
 public class ItemDAO {
-    
+
     public ItemDAO() {
-        
+
     }
 
     //Finds all dishes and drinks in the database and creates the Dish- and Drink-objects
@@ -28,7 +35,7 @@ public class ItemDAO {
             // If a connection was successfully setup, execute the SELECT statement.
             ResultSet resultset = dishConnection.executeSQLSelectStatement(
                     "SELECT * FROM dish JOIN category_dish on dish.id = category_dish.dishId JOIN category on category_dish.categoryId = category.id;");
-            
+
             if (resultset != null) {
                 try {
                     // The membershipnumber for a member is unique, so in case the
@@ -42,15 +49,25 @@ public class ItemDAO {
                         String sortDish = resultset.getString("categoryName");
                         String descriptionDish = resultset.getString("description");
                         double priceDish = resultset.getDouble("price");
-                        
-                        Item dbDish = new Dish(id, nameDish, sortDish, descriptionDish, priceDish);
+                        String imageURLString = resultset.getString("imageUrl");
+                        URL imageURL = null;
+                        BufferedImage image = null;
+                        try {
+                            imageURL = new URL(imageURLString);
+                            image = ImageIO.read(imageURL);
+                        } catch (MalformedURLException ex) {
+                            System.err.println("Not a valid URL: " + ex);
+                        } catch (IOException ex) {
+                            System.err.println("URL naar image failed: " + ex);
+                        }
+
+                        Item dbDish = new Dish(id, nameDish, sortDish, descriptionDish, priceDish, image);
 
 //                        if (resultsetIngredient != null) {
 //                            while (resultsetIngredient.next()) {
 //                                dbDish.addIngredient(new Ingredient(resultsetIngredient.getString("ingredientName")));
 //                            }
 //                        }
-
                         dbItems.add(dbDish);
                     }
                 } catch (SQLException e) {
@@ -63,14 +80,14 @@ public class ItemDAO {
             // we need to close it.
             dishConnection.closeConnection();
         }
-        
+
         // First open a database connnection
         DatabaseConnection drinkConnection = new DatabaseConnection();
         if (drinkConnection.openConnection()) {
             // If a connection was successfully setup, execute the SELECT statement.
             ResultSet resultset = drinkConnection.executeSQLSelectStatement(
                     "SELECT * FROM drink;");
-            
+
             if (resultset != null) {
                 try {
                     // The membershipnumber for a member is unique, so in case the
@@ -82,8 +99,19 @@ public class ItemDAO {
                         int id = resultset.getInt("id");
                         String nameDrink = resultset.getString("drinkName");
                         double priceDrink = resultset.getDouble("price");
-                        
-                        Item dbDrink = new Drink(id, nameDrink, priceDrink);
+                        String imageURLString = resultset.getString("imageUrl");
+                        URL imageURL = null;
+                        BufferedImage image = null;
+                        try {
+                            imageURL = new URL(imageURLString);
+                            image = ImageIO.read(imageURL);
+                        } catch (MalformedURLException ex) {
+                            System.err.println("Not a valid URL: " + ex);
+                        } catch (IOException ex) {
+                            System.err.println("URL naar image failed: " + ex);
+                        }
+
+                        Item dbDrink = new Drink(id, nameDrink, priceDrink, image);
 
                         dbItems.add(dbDrink);
                     }
@@ -97,7 +125,7 @@ public class ItemDAO {
             // we need to close it.
             drinkConnection.closeConnection();
         }
-        
+
         return dbItems;
     }
 }

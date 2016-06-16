@@ -1,5 +1,6 @@
 package domain;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,8 +14,8 @@ public class Dish extends Item{
     private String descriptionDish;
     private List<Ingredient> ingredients;
 
-    public Dish(int id, String name, String sortDish, String descriptionDish, double price) {
-        super(id, name, price);
+    public Dish(int id, String name, String sortDish, String descriptionDish, double price, BufferedImage image) {
+        super(id, name, price, image);
         this.sortDish = sortDish;
         this.descriptionDish = descriptionDish;
         
