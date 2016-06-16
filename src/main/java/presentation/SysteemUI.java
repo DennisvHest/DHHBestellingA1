@@ -7,6 +7,7 @@ import domain.Item;
 import domain.ItemOrder;
 import domain.KitchenOrder;
 import domain.RestaurantOrder;
+import domain.Table;
 import manager.ItemManager;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -25,7 +26,13 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -36,8 +43,10 @@ import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import manager.OrderManager;
+import manager.TableManager;
 
 /**
  *
@@ -55,6 +64,7 @@ public class SysteemUI extends JFrame {
     private ReceiptPanel receiptPanel;
     private ItemManager itemManager;
     private OrderManager orderManager;
+    private TableManager tableManager;
     private JDialog helpDialog;
 
     public SysteemUI() {
@@ -71,6 +81,9 @@ public class SysteemUI extends JFrame {
         itemManager.findMenuItems();
 
         orderManager = new OrderManager();
+        
+        tableManager = new TableManager();
+        tableManager.setTable(new Table(1));
 
         //Navigation bar with buttons
         frame.add(new NavBarPanel(), BorderLayout.NORTH);
@@ -492,7 +505,7 @@ public class SysteemUI extends JFrame {
         addButton.addActionListener((ActionEvent e) -> {
             //If a pending order does not exists, create one.
             if (!orderManager.pendingOrderExist()) {
-                RestaurantOrder pendingOrder = new RestaurantOrder(1);
+                RestaurantOrder pendingOrder = new RestaurantOrder(tableManager.getTable().getTableNr());
                 pendingOrder.setOrderNr(orderManager.getAutoIncrementValue("restaurantorder"));
                 orderManager.addOrder(pendingOrder);
                 orderManager.insertRestaurantOrder();
@@ -569,7 +582,7 @@ public class SysteemUI extends JFrame {
     
     public JDialog createHelpDialog() {
         JDialog newHelpDialog = new JDialog();
-        newHelpDialog.setSize(600, 400);
+        newHelpDialog.setSize(1000, 700);
         newHelpDialog.getContentPane().setBackground(Color.white);
         newHelpDialog.setUndecorated(true);
         newHelpDialog.setLocationRelativeTo(null);
@@ -582,7 +595,42 @@ public class SysteemUI extends JFrame {
         JPanel helpContentPanel = new JPanel();
         helpContentPanel.setLayout(new GridLayout(2, 2));
         
+        InputStream menuImagePath = getClass().getResourceAsStream("/images/dhhMenuHelp.png");
+        
+        JPanel menuImagePanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                try {
+                    super.paintComponent(g);
+                    g.drawImage(ImageIO.read(menuImagePath), 30, 20, 420, 280, this);
+                } catch (IOException ex) {
+                    System.err.println("Loading image failed: " + ex);
+                }
+            }
+        };
+        
+        helpContentPanel.add(menuImagePanel);
+        helpContentPanel.add(new JLabel(""
+                + "<html>"
+                + " <body>"
+                + "     <p>Bestellen met een tablet! Hoe werkt dat?</p>"
+                + " </body>"
+                + "</html>"));
+        
+        JLabel dhhLabel = new JLabel("De Hartige Hap");
+        dhhLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        helpContentPanel.add(dhhLabel);
+        
+        helpContentPanel.add(new JLabel(""));
+        
         newHelpDialog.add(helpContentPanel);
+        
+        JButton helpButton = new JButton("Vraag hulp");
+        helpButton.addActionListener((ActionEvent e) -> {
+            tableManager.needHelp();
+        });
+        
+        newHelpDialog.add(helpButton);
         
         JButton closeButton = new JButton("Terug");
         closeButton.addActionListener((ActionEvent e) -> {
