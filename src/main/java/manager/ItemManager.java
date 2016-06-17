@@ -24,6 +24,11 @@ public class ItemManager {
         drinkList = new ArrayList<>();
     }
     
+    /**
+     * Gives an ArrayList of dishes with the given sort
+     * @param sort, the type of dish
+     * @return an ArrayList of dishes that are of the given sort
+     */
     public ArrayList<Dish> getDishListBySort(String sort) {
         List<Dish> dishes = new ArrayList<>();
 

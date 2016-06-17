@@ -40,39 +40,36 @@ public class ItemDAO {
                 try {
                     // The membershipnumber for a member is unique, so in case the
                     // resultset does contain data, we need its first entry.
-                    
+
                     int prevId = 0;
                     Dish prevDish = null;
                     while (resultset.next()) {
-                        
                         if (prevId == resultset.getInt("id")) {
                             prevDish.addIngredient(new Ingredient(resultset.getString("ingredientName")));
                         } else {
                             int id = resultset.getInt("id");
-                        prevId = id;
-                        String nameDish = resultset.getString("dishName");
-                        String sortDish = resultset.getString("categoryName");
-                        String descriptionDish = resultset.getString("description");
-                        double priceDish = resultset.getDouble("price");
-                        String imageURLString = resultset.getString("imageUrl");
-                        String ingredientName = resultset.getString("ingredientName");
-                        
-                        URL imageURL = null;
-                        BufferedImage image = null;
-                        try {
-                            imageURL = new URL(imageURLString);
-                            image = ImageIO.read(imageURL);
-                        } catch (MalformedURLException ex) {
-                            System.err.println("Not a valid URL: " + ex);
-                        } catch (IOException ex) {
-                            System.err.println("URL naar image failed: " + ex);
-                        }
-                        
-                        
+                            prevId = id;
+                            String nameDish = resultset.getString("dishName");
+                            String sortDish = resultset.getString("categoryName");
+                            String descriptionDish = resultset.getString("description");
+                            double priceDish = resultset.getDouble("price");
+                            String imageURLString = resultset.getString("imageUrl");
+                            String ingredientName = resultset.getString("ingredientName");
 
-                        prevDish = new Dish(id, nameDish, sortDish, descriptionDish, priceDish, image);
-                        prevDish.addIngredient(new Ingredient(ingredientName));
-                        dbItems.add(prevDish);
+                            URL imageURL = null;
+                            BufferedImage image = null;
+                            try {
+                                imageURL = new URL(imageURLString);
+                                image = ImageIO.read(imageURL);
+                            } catch (MalformedURLException ex) {
+                                System.err.println("Not a valid URL: " + ex);
+                            } catch (IOException ex) {
+                                System.err.println("URL naar image failed: " + ex);
+                            }
+
+                            prevDish = new Dish(id, nameDish, sortDish, descriptionDish, priceDish, image);
+                            prevDish.addIngredient(new Ingredient(ingredientName));
+                            dbItems.add(prevDish);
                         }
                     }
                 } catch (SQLException e) {
@@ -132,21 +129,21 @@ public class ItemDAO {
 
         return dbItems;
     }
-    
+
     public String findAllergy(String ingredientName) {
         String allergy = "";
-        
+
         // First open a database connnection
         DatabaseConnection connection = new DatabaseConnection();
         if (connection.openConnection()) {
             // If a connection was successfully setup, execute the SELECT statement.
             ResultSet resultset = connection.executeSQLSelectStatement(
-                    "SELECT allergy.allergyName " +
-                    "FROM ingredient, ingredient_allergy, allergy " +
-                    "WHERE ingredient.id = ingredient_allergy.ingredientId " +
-                    "AND ingredient_allergy.allergyId = allergy.id " +
-                    "AND ingredient.ingredientName = '" + ingredientName + "';");
-            
+                    "SELECT allergy.allergyName "
+                    + "FROM ingredient, ingredient_allergy, allergy "
+                    + "WHERE ingredient.id = ingredient_allergy.ingredientId "
+                    + "AND ingredient_allergy.allergyId = allergy.id "
+                    + "AND ingredient.ingredientName = '" + ingredientName + "';");
+
             try {
                 if (resultset.next()) {
                     allergy = resultset.getString("allergyName");
@@ -155,7 +152,7 @@ public class ItemDAO {
                 System.err.println(ex);
             }
         }
-        
+
         return allergy;
     }
 }

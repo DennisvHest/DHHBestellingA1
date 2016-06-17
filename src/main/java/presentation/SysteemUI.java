@@ -28,12 +28,9 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -189,7 +186,7 @@ public class SysteemUI extends JFrame {
 
         public AppetizerPanel() {
             //Display every appetizer
-            for (Dish dish : itemManager.getDishListBySort("Appetizer")) {
+            for (Dish dish : itemManager.getDishListBySort("Voorgerecht")) {
                 add(createItemPanel(dish));
             }
         }
@@ -199,7 +196,7 @@ public class SysteemUI extends JFrame {
 
         public MainCoursePanel() {
             //Display every main course
-            for (Dish dish : itemManager.getDishListBySort("MainCourse")) {
+            for (Dish dish : itemManager.getDishListBySort("Hoofdgerecht")) {
                 add(createItemPanel(dish));
             }
         }
@@ -209,7 +206,7 @@ public class SysteemUI extends JFrame {
 
         public DessertPanel() {
             //Display every dessert
-            for (Dish dish : itemManager.getDishListBySort("Dessert")) {
+            for (Dish dish : itemManager.getDishListBySort("Nagerecht")) {
                 add(createItemPanel(dish));
             }
         }
@@ -453,6 +450,12 @@ public class SysteemUI extends JFrame {
         cl.show(centerMenu, panel);
     }
 
+    /**
+     * Creates a panel that displays the given item.
+     * If the item is a dish, a 'Meer info' button will also be created.
+     * @param item (either a dish or a drink)
+     * @return JPanel that displays the given item
+     */
     public JPanel createItemPanel(Item item) {
         JPanel itemPanel = new JPanel();
         List<JLabel> labels = new ArrayList<>();
@@ -566,6 +569,11 @@ public class SysteemUI extends JFrame {
         return itemPanel;
     }
 
+    /**
+     * Creates a dialog box that displays extra information about the given dish
+     * @param dish that will be displayed
+     * @return a JDialog that will display the given dish
+     */
     public JDialog createMoreInfoDialog(Dish dish) {
         JDialog moreInfoDialog = new JDialog();
         moreInfoDialog.setSize(350, 500);
@@ -692,11 +700,23 @@ public class SysteemUI extends JFrame {
         helpContentPanel.add(new JLabel(""
                 + "<html>"
                 + " <body>"
-                + "     <p>Bestellen met een tablet! Hoe werkt dat?</p>"
+                + "<p>Bestellen met een tablet! Hoe werkt dat? <br>"
+                + "Voeg gerechten toe aan uw bestelling door 'Voeg toe' aan te raken<br>"
+                + "Ga naar het besteloverzicht om het aantal gerechten / dranken te veranderen<br>"
+                + "en eventueel gerechten te verwijderen. Druk dan op 'Bevestig' als uw bestelling klaar is."
+                + "</p>"
                 + " </body>"
                 + "</html>"));
 
-        JLabel dhhLabel = new JLabel("De Hartige Hap");
+        JLabel dhhLabel = new JLabel(""
+                + "<html>"
+                + " <body>"
+                + "<p>De Hartige Hap:<br>"
+                + "De Hartige Hap garandeert kwaliteit. Alle ingrediënten zijn altijd vers<br>"
+                + "en komen van lokale boeren."
+                + "</p>"
+                + " </body>"
+                + "</html>");
         dhhLabel.setHorizontalAlignment(SwingConstants.CENTER);
         helpContentPanel.add(dhhLabel);
 
