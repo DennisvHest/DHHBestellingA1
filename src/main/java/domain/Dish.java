@@ -30,6 +30,10 @@ public class Dish extends Item{
         return descriptionDish;
     }
     
+    public ArrayList<Ingredient> getIngredients() {
+        return (ArrayList<Ingredient>) ingredients;
+    }
+    
     public void addIngredient(Ingredient ingredient) {
         ingredients.add(ingredient);
     }

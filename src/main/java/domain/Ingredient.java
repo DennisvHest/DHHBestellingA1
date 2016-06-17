@@ -18,4 +18,13 @@ public class Ingredient {
         
         allergy = itemManager.findAllergy(ingredientName);
     }
+    
+    //Getters
+    public String getName() {
+        return ingredientName;
+    }
+    
+    public String getAllergy() {
+        return allergy;
+    }
 }

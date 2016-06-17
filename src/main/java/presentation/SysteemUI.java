@@ -3,6 +3,7 @@ package presentation;
 import domain.BarOrder;
 import domain.Dish;
 import domain.Drink;
+import domain.Ingredient;
 import domain.Item;
 import domain.ItemOrder;
 import domain.KitchenOrder;
@@ -493,7 +494,7 @@ public class SysteemUI extends JFrame {
         orderPanel.setBackground(Color.white);
 
         if (item instanceof Dish) {
-            JDialog moreInfoDialog = createMoreInfoDialog(item);
+            JDialog moreInfoDialog = createMoreInfoDialog((Dish) item);
             moreInfoDialog.setVisible(false);
 
             JButton moreInfoButton = new JButton("Meer info");
@@ -561,7 +562,7 @@ public class SysteemUI extends JFrame {
         return itemPanel;
     }
 
-    public JDialog createMoreInfoDialog(Item item) {
+    public JDialog createMoreInfoDialog(Dish dish) {
         JDialog moreInfoDialog = new JDialog();
         moreInfoDialog.setSize(350, 500);
         moreInfoDialog.getContentPane().setBackground(Color.white);
@@ -571,7 +572,7 @@ public class SysteemUI extends JFrame {
         moreInfoDialog.setLayout(new BoxLayout(moreInfoDialog.getContentPane(), BoxLayout.Y_AXIS));
         moreInfoDialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.blue, 3));
         
-        BufferedImage image = item.getImage();
+        BufferedImage image = dish.getImage();
         
         JPanel imagePanel = new JPanel() {
             @Override
@@ -582,8 +583,67 @@ public class SysteemUI extends JFrame {
         };
         
         imagePanel.setBackground(Color.white);
+        imagePanel.setMaximumSize(new Dimension(350, 240));
 
         moreInfoDialog.add(imagePanel);
+        
+        moreInfoDialog.add(new JLabel(dish.getName()));
+        
+        JLabel descriptionLabel = new JLabel("Beschrijving:");
+        descriptionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        moreInfoDialog.add(descriptionLabel);
+        
+        JTextArea descriptionArea = new JTextArea();
+        descriptionArea.setMaximumSize(new Dimension(370, 100));
+        descriptionArea.setText(dish.getDescriptionDish());
+        descriptionArea.setEditable(false);
+        descriptionArea.setLineWrap(true);
+        descriptionArea.setWrapStyleWord(true);
+        descriptionArea.setMargin(new Insets(0, 10, 0, 10));
+        
+        JScrollPane descriptionScroll = new JScrollPane(descriptionArea);
+        descriptionScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        descriptionScroll.setBorder(null);
+        descriptionScroll.setMaximumSize(new Dimension(390, 100));
+        
+        moreInfoDialog.add(descriptionScroll);
+        
+        JPanel ingredientInfoPanel = new JPanel();
+        ingredientInfoPanel.setLayout(new BoxLayout(ingredientInfoPanel, BoxLayout.X_AXIS));
+        
+        String ingredients = "Ingredienten:\n";
+        
+        for (Ingredient ingredient : dish.getIngredients()) {
+            ingredients += "-" + ingredient.getName() + "\n";
+        }
+        
+        String allergies = "Kan schadelijk zijn voor mensen met:\n";
+        
+        for (Ingredient ingredient : dish.getIngredients()) {
+            if (!"".equals(ingredient.getAllergy())) {
+                allergies += "-" + ingredient.getAllergy() + "\n";
+            }
+        }
+        
+        JTextArea ingredientsArea = new JTextArea();
+        ingredientsArea.setText(ingredients);
+        ingredientsArea.setMaximumSize(new Dimension(175, 150));
+        ingredientsArea.setEditable(false);
+        ingredientsArea.setLineWrap(true);
+        ingredientsArea.setWrapStyleWord(true);
+        ingredientsArea.setMargin(new Insets(0, 10, 0, 10));
+        
+        JTextArea allergiesArea = new JTextArea();
+        allergiesArea.setText(allergies);
+        allergiesArea.setMaximumSize(new Dimension(175, 150));
+        allergiesArea.setEditable(false);
+        allergiesArea.setLineWrap(true);
+        allergiesArea.setWrapStyleWord(true);
+        
+        ingredientInfoPanel.add(ingredientsArea);
+        ingredientInfoPanel.add(allergiesArea);
+        
+        moreInfoDialog.add(ingredientInfoPanel);
 
         JButton closeButton = new JButton("Terug");
         closeButton.addActionListener((ActionEvent e) -> {
