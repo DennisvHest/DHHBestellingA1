@@ -44,12 +44,12 @@ public class OrderDAO {
                 int kitchenOrderAI = getAutoIncrementValue("kitchenorder");
                 //Insert the kitchenOrder
                 dishConnection.executeSQLIUDStatement(
-                        "INSERT INTO kitchenorder VALUES (" + kitchenOrderAI + ",NOW(), 1, " + order.getOrderNr() + ");");
+                        "INSERT INTO `kitchenorder` (`id`, `orderDate`, `statusId`, `restaurantOrderId`) VALUES (" + kitchenOrderAI + ",NOW(), 1, " + order.getOrderNr() + ");");
                 
                 //For every kitchenOrder add the dishes to the database
                 for (KitchenOrder kitchenOrder : order.getKitchenOrders()) {
                     dishConnection.executeSQLIUDStatement(
-                        "INSERT INTO kitchenorder_dish VALUES (" + kitchenOrder.getItem().getId() + ", " + kitchenOrderAI + ", " + kitchenOrder.getAmount() + ");");
+                        "INSERT INTO `kitchenorder_dish` (`dishId`, `kitchenOrderId`, `quantity`) VALUES (" + kitchenOrder.getItem().getId() + ", " + kitchenOrderAI + ", " + kitchenOrder.getAmount() + ");");
                 }
             }
 
@@ -67,12 +67,12 @@ public class OrderDAO {
                 int barOrderAI = getAutoIncrementValue("barorder");
                 //Insert the barOrder
                 drinkConnection.executeSQLIUDStatement(
-                        "INSERT INTO barorder VALUES (" + barOrderAI + ",NOW(), 1, " + order.getOrderNr() + ");");
+                        "INSERT INTO `barorder` (`id`, `orderDate`, `statusId`, `restaurantOrderId`) VALUES (" + barOrderAI + ",NOW(), 1, " + order.getOrderNr() + ");");
                 
                 //For every barOrder add the drinks to the database
                 for (BarOrder barOrder : order.getBarOrders()) {
                     drinkConnection.executeSQLIUDStatement(
-                        "INSERT INTO barorder_drink VALUES (" + barOrderAI + ", " + barOrder.getItem().getId() + ", " + barOrder.getAmount() + ");");
+                        "INSERT INTO `barorder_drink` (`barorderId`, `drinkId`, `quantity`) VALUES (" + barOrderAI + ", " + barOrder.getItem().getId() + ", " + barOrder.getAmount() + ");");
                 }
             }
 
