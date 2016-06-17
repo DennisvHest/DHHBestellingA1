@@ -28,7 +28,7 @@ public class DatabaseConnection {
             try {
                 // Try to create a connection with the database
                 connection = DriverManager.getConnection(
-                        "jdbc:mysql://localhost/23ivp4a", "root", "");
+                        "jdbc:mysql://145.48.6.147:3306/23ivp4a", "23ivp4a1", "bestelling");
 
                 if (connection != null) {
                     statement = connection.createStatement();

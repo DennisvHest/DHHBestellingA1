@@ -98,6 +98,7 @@ public class SysteemUI extends JFrame {
 
         orderSummaryPanel = new OrderSummaryPanel();
         menuPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, menuTabbedPane, orderSummaryPanel);
+        menuPane.setDividerLocation(2000);
 
         //Menu with list of ordered items
         orderOverviewPanel = new OrderOverviewPanel();
@@ -226,6 +227,7 @@ public class SysteemUI extends JFrame {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             setBackground(Color.white);
             add(new JLabel("Toegevoegde gerechten:"));
+            setPreferredSize(new Dimension(400, menuTabbedPane.getHeight()));
 
             orderSumArea = new JTextArea();
             orderSumArea.setEditable(false);
