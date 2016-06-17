@@ -1,6 +1,7 @@
 package datastorage;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 /**
  *
@@ -102,6 +103,31 @@ public class DatabaseConnection {
             // Then, if succeeded, execute the query.
             try {
                 statement.executeUpdate(query);
+                result = true;
+            } catch (SQLException e) {
+                System.out.println(e);
+                result = false;
+            }
+        }
+
+        return result;
+    }
+    
+    public boolean executeSQLAddOrderTransaction(ArrayList<String> querys) {
+        boolean result = false;
+
+        // First, check whether a some query was passed and the connection with
+        // the database.
+        if (!querys.isEmpty() && connectionIsOpen()) {
+            // Then, if succeeded, execute the querys.
+            try {
+                connection.setAutoCommit(false); //transaction block start
+                
+                for (String query : querys) {
+                    statement.executeUpdate(query);
+                }
+                
+                connection.commit(); //end transaction
                 result = true;
             } catch (SQLException e) {
                 System.out.println(e);

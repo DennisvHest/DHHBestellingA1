@@ -34,22 +34,29 @@ public class ItemDAO {
         if (dishConnection.openConnection()) {
             // If a connection was successfully setup, execute the SELECT statement.
             ResultSet resultset = dishConnection.executeSQLSelectStatement(
-                    "SELECT * FROM dish JOIN category_dish on dish.id = category_dish.dishId JOIN category on category_dish.categoryId = category.id;");
+                    "SELECT * FROM bestelling_getalldishes;");
 
             if (resultset != null) {
                 try {
                     // The membershipnumber for a member is unique, so in case the
                     // resultset does contain data, we need its first entry.
+                    
+                    int prevId = 0;
+                    Dish prevDish = null;
                     while (resultset.next()) {
-
-//                        ResultSet resultsetIngredient = connection.executeSQLSelectStatement(
-//                                "SELECT ingredientName FROM dish JOIN dish_ingredient ON dish.id = dish_ingredient.dishId JOIN ingredient ON dish_ingredient.ingredientId = ingredient.id WHERE dish.id = " + resultset.getInt("id") + ";");
-                        int id = resultset.getInt("id");
+                        
+                        if (prevId == resultset.getInt("id")) {
+                            prevDish.addIngredient(new Ingredient(resultset.getString("ingredientName")));
+                        } else {
+                            int id = resultset.getInt("id");
+                        prevId = id;
                         String nameDish = resultset.getString("dishName");
                         String sortDish = resultset.getString("categoryName");
                         String descriptionDish = resultset.getString("description");
                         double priceDish = resultset.getDouble("price");
                         String imageURLString = resultset.getString("imageUrl");
+                        String ingredientName = resultset.getString("ingredientName");
+                        
                         URL imageURL = null;
                         BufferedImage image = null;
                         try {
@@ -61,20 +68,16 @@ public class ItemDAO {
                             System.err.println("URL naar image failed: " + ex);
                         }
 
-                        Item dbDish = new Dish(id, nameDish, sortDish, descriptionDish, priceDish, image);
-
-//                        if (resultsetIngredient != null) {
-//                            while (resultsetIngredient.next()) {
-//                                dbDish.addIngredient(new Ingredient(resultsetIngredient.getString("ingredientName")));
-//                            }
+                        prevDish = new Dish(id, nameDish, sortDish, descriptionDish, priceDish, image);
+                        prevDish.addIngredient(new Ingredient(ingredientName));
 //                        }
-                        dbItems.add(dbDish);
+                        dbItems.add(prevDish);
+                        }
                     }
                 } catch (SQLException e) {
                     System.out.println(e);
                 }
             }
-            // else an error occurred leave 'member' to null.
 
             // We had a database connection opened. Since we're finished,
             // we need to close it.

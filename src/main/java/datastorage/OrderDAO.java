@@ -5,6 +5,7 @@ import domain.KitchenOrder;
 import domain.RestaurantOrder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  *
@@ -38,46 +39,33 @@ public class OrderDAO {
         // First open the database connection.
         DatabaseConnection dishConnection = new DatabaseConnection();
         if (dishConnection.openConnection()) {
-            
+            int kitchenOrderAI = getAutoIncrementValue("kitchenorder");
+            int barOrderAI = getAutoIncrementValue("barorder");
+            ArrayList<String> querys = new ArrayList<>();
             //If there are any kitchenorders, add them to the database
             if (!order.getKitchenOrders().isEmpty()) {
-                int kitchenOrderAI = getAutoIncrementValue("kitchenorder");
                 //Insert the kitchenOrder
-                dishConnection.executeSQLIUDStatement(
-                        "INSERT INTO `kitchenorder` (`id`, `orderDate`, `statusId`, `restaurantOrderId`) VALUES (" + kitchenOrderAI + ",NOW(), 1, " + order.getOrderNr() + ");");
-                
+                querys.add("INSERT INTO `kitchenorder` (`id`, `orderDate`, `statusId`, `restaurantOrderId`) VALUES (" + kitchenOrderAI + ",NOW(), 1, " + order.getOrderNr() + ");");
+
                 //For every kitchenOrder add the dishes to the database
                 for (KitchenOrder kitchenOrder : order.getKitchenOrders()) {
-                    dishConnection.executeSQLIUDStatement(
-                        "INSERT INTO `kitchenorder_dish` (`dishId`, `kitchenOrderId`, `quantity`) VALUES (" + kitchenOrder.getItem().getId() + ", " + kitchenOrderAI + ", " + kitchenOrder.getAmount() + ");");
+                    querys.add("INSERT INTO `kitchenorder_dish` (`dishId`, `kitchenOrderId`, `quantity`) VALUES (" + kitchenOrder.getItem().getId() + ", " + kitchenOrderAI + ", " + kitchenOrder.getAmount() + ");");
                 }
             }
+
+            if (!order.getBarOrders().isEmpty()) {
+                querys.add("INSERT INTO `barorder` (`id`, `orderDate`, `statusId`, `restaurantOrderId`) VALUES (" + barOrderAI + ",NOW(), 1, " + order.getOrderNr() + ");");
+
+                //For every barOrder add the drinks to the database
+                for (BarOrder barOrder : order.getBarOrders()) {
+                    querys.add("INSERT INTO `barorder_drink` (`barorderId`, `drinkId`, `quantity`) VALUES (" + barOrderAI + ", " + barOrder.getItem().getId() + ", " + barOrder.getAmount() + ");");
+                }
+            }
+
+            dishConnection.executeSQLAddOrderTransaction(querys);
 
             // Finished with the connection, so close it.
             dishConnection.closeConnection();
-        }
-        // else an error occurred 
-        
-        // First open the database connection.
-        DatabaseConnection drinkConnection = new DatabaseConnection();
-        if (drinkConnection.openConnection()) {
-            
-            //If there are any barOrders, add them to the database
-            if (!order.getBarOrders().isEmpty()) {
-                int barOrderAI = getAutoIncrementValue("barorder");
-                //Insert the barOrder
-                drinkConnection.executeSQLIUDStatement(
-                        "INSERT INTO `barorder` (`id`, `orderDate`, `statusId`, `restaurantOrderId`) VALUES (" + barOrderAI + ",NOW(), 1, " + order.getOrderNr() + ");");
-                
-                //For every barOrder add the drinks to the database
-                for (BarOrder barOrder : order.getBarOrders()) {
-                    drinkConnection.executeSQLIUDStatement(
-                        "INSERT INTO `barorder_drink` (`barorderId`, `drinkId`, `quantity`) VALUES (" + barOrderAI + ", " + barOrder.getItem().getId() + ", " + barOrder.getAmount() + ");");
-                }
-            }
-
-            // Finished with the connection, so close it.
-            drinkConnection.closeConnection();
         }
         // else an error occurred 
     }
@@ -104,17 +92,17 @@ public class OrderDAO {
         }
         return value;
     }
-    
+
     public boolean updateOrderStatus(int orderNr, int status) {
         boolean result = false;
-        
+
         // First open the database connection.
         DatabaseConnection connection = new DatabaseConnection();
         if (connection.openConnection()) {
             result = connection.executeSQLIUDStatement(
                     "UPDATE restaurantorder SET statusId = " + status + " WHERE id = " + orderNr + ";");
         }
-        
+
         return result;
     }
 }
