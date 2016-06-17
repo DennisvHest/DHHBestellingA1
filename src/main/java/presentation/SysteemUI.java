@@ -25,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -67,7 +68,7 @@ public class SysteemUI extends JFrame {
     private ItemManager itemManager;
     private OrderManager orderManager;
     private TableManager tableManager;
-    private JDialog helpDialog;
+    private JDialog helpDialog, welcomeDialog;
 
     public SysteemUI() {
         frame = new JFrame();
@@ -115,6 +116,9 @@ public class SysteemUI extends JFrame {
         centerMenu.add("orderOverviewPanel", orderOverviewPanel);
         centerMenu.add("receiptPanel", receiptPanel);
         frame.add(centerMenu, BorderLayout.CENTER);
+        
+        welcomeDialog = createWelcomeDialog();
+        welcomeDialog.setVisible(true);
 
         frame.pack();
         frame.setExtendedState(Frame.MAXIMIZED_BOTH);
@@ -715,5 +719,60 @@ public class SysteemUI extends JFrame {
         newHelpDialog.add(closeButton);
 
         return newHelpDialog;
+    }
+    
+    public JDialog createWelcomeDialog() {
+        JDialog welcomeDialog = new JDialog();
+        welcomeDialog.setSize(1000, 700);
+        welcomeDialog.getContentPane().setBackground(Color.white);
+        welcomeDialog.setUndecorated(true);
+        welcomeDialog.setLocationRelativeTo(null);
+        welcomeDialog.setAlwaysOnTop(true);
+        welcomeDialog.setLayout(new BoxLayout(welcomeDialog.getContentPane(), BoxLayout.Y_AXIS));
+        welcomeDialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.blue, 3));
+        
+        JLabel dhhLabel = new JLabel("Restaurant De Hartige Hap");
+        dhhLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        dhhLabel.setBorder(new LineBorder(Color.black, 5));
+        dhhLabel.setFont(new Font("Serif", Font.BOLD, 80));
+        
+        welcomeDialog.add(dhhLabel);
+        
+        InputStream welkomImagePath = getClass().getResourceAsStream("/images/dhhWelkom.jpg");
+
+        JPanel welkomImagePanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                try {
+                    super.paintComponent(g);
+                    g.drawImage(ImageIO.read(welkomImagePath), 250, 10, this);
+                } catch (IOException ex) {
+                    System.err.println("Loading image failed: " + ex);
+                }
+            }
+        };
+        
+        welkomImagePanel.setBackground(Color.white);
+        
+        JButton toMenuButton = new JButton("Menu");
+        toMenuButton.addActionListener((ActionEvent e) -> {
+            welcomeDialog.setVisible(false);
+        });
+        
+        JButton toHelpButton = new JButton("Informatie");
+        toHelpButton.addActionListener((ActionEvent e) -> {
+            welcomeDialog.setVisible(false);
+            helpDialog.setVisible(true);
+        });
+        
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(toMenuButton);
+        buttonPanel.add(toHelpButton);
+        
+        welcomeDialog.add(welkomImagePanel);
+        welcomeDialog.add(buttonPanel);
+        
+        return welcomeDialog;
     }
 }
