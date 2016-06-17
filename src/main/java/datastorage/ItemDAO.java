@@ -67,10 +67,11 @@ public class ItemDAO {
                         } catch (IOException ex) {
                             System.err.println("URL naar image failed: " + ex);
                         }
+                        
+                        
 
                         prevDish = new Dish(id, nameDish, sortDish, descriptionDish, priceDish, image);
                         prevDish.addIngredient(new Ingredient(ingredientName));
-//                        }
                         dbItems.add(prevDish);
                         }
                     }
@@ -130,5 +131,31 @@ public class ItemDAO {
         }
 
         return dbItems;
+    }
+    
+    public String findAllergy(String ingredientName) {
+        String allergy = "";
+        
+        // First open a database connnection
+        DatabaseConnection connection = new DatabaseConnection();
+        if (connection.openConnection()) {
+            // If a connection was successfully setup, execute the SELECT statement.
+            ResultSet resultset = connection.executeSQLSelectStatement(
+                    "SELECT allergy.allergyName " +
+                    "FROM ingredient, ingredient_allergy, allergy " +
+                    "WHERE ingredient.id = ingredient_allergy.ingredientId " +
+                    "AND ingredient_allergy.allergyId = allergy.id " +
+                    "AND ingredient.ingredientName = '" + ingredientName + "';");
+            
+            try {
+                if (resultset.next()) {
+                    allergy = resultset.getString("allergyName");
+                }
+            } catch (SQLException ex) {
+                System.err.println(ex);
+            }
+        }
+        
+        return allergy;
     }
 }

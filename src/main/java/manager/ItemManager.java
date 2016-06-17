@@ -60,4 +60,8 @@ public class ItemManager {
             }
         }
     }
+    
+    public String findAllergy(String ingredientName) {
+        return dishDAO.findAllergy(ingredientName);
+    }
 }
