@@ -44,6 +44,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import manager.OrderManager;
 import manager.TableManager;
@@ -81,7 +82,7 @@ public class SysteemUI extends JFrame {
         itemManager.findMenuItems();
 
         orderManager = new OrderManager();
-        
+
         tableManager = new TableManager();
         tableManager.setTable(new Table(1));
 
@@ -155,7 +156,7 @@ public class SysteemUI extends JFrame {
                 receiptButton.addActionListener((ActionEvent e) -> {
                     changePanel("receiptPanel");
                 });
-                
+
                 helpDialog = createHelpDialog();
                 helpDialog.setVisible(false);
 
@@ -465,10 +466,10 @@ public class SysteemUI extends JFrame {
                 g.drawImage(image, 30, 20, 240, 160, this);
             }
         };
-        
+
         imagePanel.setPreferredSize(new Dimension(300, 200));
         imagePanel.setBackground(Color.white);
-        
+
         itemPanel.add(imagePanel, BorderLayout.NORTH);
 
         JPanel descriptionPanel = new JPanel();
@@ -491,10 +492,10 @@ public class SysteemUI extends JFrame {
         JPanel orderPanel = new JPanel();
         orderPanel.setBackground(Color.white);
 
-        JDialog moreInfoDialog = createMoreInfoDialog();
-        moreInfoDialog.setVisible(false);
-
         if (item instanceof Dish) {
+            JDialog moreInfoDialog = createMoreInfoDialog(item);
+            moreInfoDialog.setVisible(false);
+
             JButton moreInfoButton = new JButton("Meer info");
             moreInfoButton.addActionListener((ActionEvent e) -> {
                 moreInfoDialog.setVisible(true);
@@ -560,17 +561,29 @@ public class SysteemUI extends JFrame {
         return itemPanel;
     }
 
-    public JDialog createMoreInfoDialog() {
+    public JDialog createMoreInfoDialog(Item item) {
         JDialog moreInfoDialog = new JDialog();
-        moreInfoDialog.setSize(300, 400);
+        moreInfoDialog.setSize(350, 500);
         moreInfoDialog.getContentPane().setBackground(Color.white);
         moreInfoDialog.setUndecorated(true);
         moreInfoDialog.setLocationRelativeTo(null);
         moreInfoDialog.setAlwaysOnTop(true);
-        moreInfoDialog.setLayout(new FlowLayout());
+        moreInfoDialog.setLayout(new BoxLayout(moreInfoDialog.getContentPane(), BoxLayout.Y_AXIS));
         moreInfoDialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.blue, 3));
+        
+        BufferedImage image = item.getImage();
+        
+        JPanel imagePanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(image, 25, 20, 300, 200, this);
+            }
+        };
+        
+        imagePanel.setBackground(Color.white);
 
-        moreInfoDialog.add(new JLabel("Hallo"));
+        moreInfoDialog.add(imagePanel);
 
         JButton closeButton = new JButton("Terug");
         closeButton.addActionListener((ActionEvent e) -> {
@@ -581,7 +594,7 @@ public class SysteemUI extends JFrame {
 
         return moreInfoDialog;
     }
-    
+
     public JDialog createHelpDialog() {
         JDialog newHelpDialog = new JDialog();
         newHelpDialog.setSize(1000, 700);
@@ -593,12 +606,12 @@ public class SysteemUI extends JFrame {
         newHelpDialog.getRootPane().setBorder(BorderFactory.createLineBorder(Color.blue, 3));
 
         newHelpDialog.add(new JLabel("     Informatie"));
-        
+
         JPanel helpContentPanel = new JPanel();
         helpContentPanel.setLayout(new GridLayout(2, 2));
-        
+
         InputStream menuImagePath = getClass().getResourceAsStream("/images/dhhMenuHelp.png");
-        
+
         JPanel menuImagePanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -610,7 +623,7 @@ public class SysteemUI extends JFrame {
                 }
             }
         };
-        
+
         helpContentPanel.add(menuImagePanel);
         helpContentPanel.add(new JLabel(""
                 + "<html>"
@@ -618,29 +631,29 @@ public class SysteemUI extends JFrame {
                 + "     <p>Bestellen met een tablet! Hoe werkt dat?</p>"
                 + " </body>"
                 + "</html>"));
-        
+
         JLabel dhhLabel = new JLabel("De Hartige Hap");
         dhhLabel.setHorizontalAlignment(SwingConstants.CENTER);
         helpContentPanel.add(dhhLabel);
-        
+
         helpContentPanel.add(new JLabel(""));
-        
+
         newHelpDialog.add(helpContentPanel);
-        
+
         JButton helpButton = new JButton("Vraag hulp");
         helpButton.addActionListener((ActionEvent e) -> {
             tableManager.needHelp();
         });
-        
+
         newHelpDialog.add(helpButton);
-        
+
         JButton closeButton = new JButton("Terug");
         closeButton.addActionListener((ActionEvent e) -> {
             newHelpDialog.setVisible(false);
         });
 
         newHelpDialog.add(closeButton);
-        
+
         return newHelpDialog;
     }
 }
