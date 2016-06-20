@@ -43,6 +43,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import manager.OrderManager;
@@ -186,6 +187,8 @@ public class SysteemUI extends JFrame {
 
         public AppetizerPanel() {
             //Display every appetizer
+            setLayout(new GridLayout(0, 3));
+            
             for (Dish dish : itemManager.getDishListBySort("Voorgerecht")) {
                 add(createItemPanel(dish));
             }
@@ -461,6 +464,7 @@ public class SysteemUI extends JFrame {
         List<JLabel> labels = new ArrayList<>();
 
         itemPanel.setPreferredSize(new Dimension(300, 400));
+        itemPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         //Everything will be displayed vertically
         itemPanel.setLayout(new BorderLayout());
