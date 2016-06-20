@@ -100,6 +100,7 @@ public class SysteemUI extends JFrame {
         orderSummaryPanel = new OrderSummaryPanel();
         menuPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, menuTabbedPane, orderSummaryPanel);
         menuPane.setDividerLocation(2000);
+        menuPane.setDividerSize(0);
 
         //Menu with list of ordered items
         orderOverviewPanel = new OrderOverviewPanel();
@@ -464,7 +465,7 @@ public class SysteemUI extends JFrame {
         List<JLabel> labels = new ArrayList<>();
 
         itemPanel.setPreferredSize(new Dimension(300, 400));
-        itemPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        itemPanel.setBorder(new EmptyBorder(10, 70, 10, 70));
 
         //Everything will be displayed vertically
         itemPanel.setLayout(new BorderLayout());
