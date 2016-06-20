@@ -41,6 +41,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import static javax.swing.ScrollPaneConstants.*;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -212,10 +213,17 @@ public class SysteemUI extends JFrame {
 
         public DessertPanel() {
             //Display every dessert
-            setLayout(new GridLayout(0, 2));
+            setLayout(new GridLayout(0, 3));
             
             for (Dish dish : itemManager.getDishListBySort("Nagerecht")) {
                 add(createItemPanel(dish));
+            }
+            
+            if (itemManager.getDishListBySort("Nagerecht").size() <= 2) {
+                add(new JLabel(""));
+                add(new JLabel(""));
+                add(new JLabel(""));
+                add(new JLabel(""));
             }
         }
     }
@@ -259,6 +267,8 @@ public class SysteemUI extends JFrame {
         //Menu that shows the pending order and the previously sent orders
         public OrderOverviewPanel() {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+            
+            JScrollPane orderScroll = new JScrollPane(this, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
 
             add(new JLabel("Bestelling in afwachting van bevestiging"));
 
