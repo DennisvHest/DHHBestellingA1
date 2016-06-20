@@ -200,6 +200,8 @@ public class SysteemUI extends JFrame {
 
         public MainCoursePanel() {
             //Display every main course
+            setLayout(new GridLayout(0, 3));
+            
             for (Dish dish : itemManager.getDishListBySort("Hoofdgerecht")) {
                 add(createItemPanel(dish));
             }
@@ -210,6 +212,8 @@ public class SysteemUI extends JFrame {
 
         public DessertPanel() {
             //Display every dessert
+            setLayout(new GridLayout(0, 2));
+            
             for (Dish dish : itemManager.getDishListBySort("Nagerecht")) {
                 add(createItemPanel(dish));
             }
@@ -220,6 +224,8 @@ public class SysteemUI extends JFrame {
 
         public DrinkPanel() {
             //Display every drink
+            setLayout(new GridLayout(0, 3));
+            
             for (Drink drink : itemManager.getDrinkList()) {
                 add(createItemPanel(drink));
             }
