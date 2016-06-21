@@ -402,14 +402,16 @@ public class SysteemUI extends JFrame {
 
         public ReceiptPanel() {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            add(new JLabel("Rekening"));
+            JLabel receiptLabel = new JLabel();
+            receiptLabel.setFont(receiptLabel.getFont ().deriveFont (24.0f));
+            add(receiptLabel);
 
             orderReceiptsPanel = new JPanel();
-            orderReceiptsPanel.setMaximumSize(new Dimension(600, 9999));
+            orderReceiptsPanel.setMaximumSize(new Dimension(1000, 9999));
             add(orderReceiptsPanel);
 
             orderTotalPanel = new JPanel();
-            orderTotalPanel.setMaximumSize(new Dimension(200, 200));
+            orderTotalPanel.setMaximumSize(new Dimension(600, 200));
             add(orderTotalPanel);
         }
 
@@ -425,9 +427,12 @@ public class SysteemUI extends JFrame {
             }
 
             double total = orderManager.getUnpaidTotal();
-            orderTotalPanel.add(new JLabel("Totaal: € " + String.format("%.2f", total)));
+            JLabel totalLabel = new JLabel("Totaal: € " + String.format("%.2f", total));
+            totalLabel.setFont(totalLabel.getFont ().deriveFont (24.0f));
+            orderTotalPanel.add(totalLabel);
 
             JButton payButton = new JButton("Betalen");
+            payButton.setPreferredSize(new Dimension(130, 70));
             payButton.addActionListener((ActionEvent e) -> {
                 orderManager.payUnpaidOrders();
             });
@@ -437,8 +442,10 @@ public class SysteemUI extends JFrame {
         public JPanel createOrderReceiptPanel(RestaurantOrder order) {
             JPanel orderReceiptPanel = new JPanel();
             orderReceiptPanel.setLayout(new BoxLayout(orderReceiptPanel, BoxLayout.Y_AXIS));
-
-            orderReceiptPanel.add(new JLabel("Niet Betaalde bestelling #" + Integer.toString(order.getOrderNr())));
+            
+            JLabel orderNumberLabel = new JLabel("Niet Betaalde bestelling #" + Integer.toString(order.getOrderNr()));
+            orderNumberLabel.setFont(orderNumberLabel.getFont ().deriveFont (24.0f));
+            orderReceiptPanel.add(orderNumberLabel);
 
             JPanel orderTable = new JPanel();
             orderTable.setLayout(new GridLayout(order.getItemOrders().size() + 1, 4, 10, 10));
@@ -457,6 +464,13 @@ public class SysteemUI extends JFrame {
                 orderTable.add(new JLabel("€ " + String.format("%.2f", pricePerDish)));
                 orderTable.add(new JLabel(Integer.toString(amount)));
                 orderTable.add(new JLabel("€ " + String.format("%.2f", totalPriceDish)));
+            }
+            
+            //Increase the font size for every JLabel
+            for (Component component : orderTable.getComponents()) {
+                if (component instanceof JLabel) {
+                    component.setFont(component.getFont ().deriveFont (20.0f));
+                }
             }
 
             orderReceiptPanel.add(orderTable);
